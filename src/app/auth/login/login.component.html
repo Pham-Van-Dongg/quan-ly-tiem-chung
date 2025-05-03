@@ -1,0 +1,91 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card p-4 shadow">
+        <h3 class="text-center">Đăng Nhập</h3>
+        <form
+          [formGroup]="loginForm"
+          (ngSubmit)="onSubmit()"
+          class="needs-validation"
+        >
+          <!-- Username -->
+          <div class="mb-3">
+            <label for="username" class="form-label">Tên đăng nhập</label>
+            <input
+              id="username"
+              type="text"
+              class="form-control"
+              formControlName="username"
+              [ngClass]="{
+                'is-invalid':
+                  username?.invalid && (username?.dirty || username?.touched)
+              }"
+            />
+            <div
+              class="invalid-feedback"
+              *ngIf="
+                username?.invalid && (username?.dirty || username?.touched)
+              "
+            >
+              <div *ngIf="username?.errors?.['required']">
+                Tên đăng nhập không được để trống.
+              </div>
+              <div *ngIf="username?.errors?.['minlength']">
+                Tên đăng nhập phải có ít nhất 3 ký tự.
+              </div>
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="mb-3">
+            <label for="password" class="form-label">Mật khẩu</label>
+            <input
+              id="password"
+              type="password"
+              class="form-control"
+              formControlName="password"
+              [ngClass]="{
+                'is-invalid':
+                  password?.invalid && (password?.dirty || password?.touched)
+              }"
+            />
+            <div
+              class="invalid-feedback"
+              *ngIf="
+                password?.invalid && (password?.dirty || password?.touched)
+              "
+            >
+              <div *ngIf="password?.errors?.['required']">
+                Mật khẩu không được để trống.
+              </div>
+              <div *ngIf="password?.errors?.['pattern']">
+                Mật khẩu phải có ít nhất 6 ký tự, bao gồm cả chữ và số.
+              </div>
+            </div>
+          </div>
+
+          <!-- Remember Me -->
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="rememberMe" />
+            <label class="form-check-label" for="rememberMe"
+              >Nhớ mật khẩu</label
+            >
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            class="btn btn-primary w-100"
+            [disabled]="loginForm.invalid"
+          >
+            Đăng Nhập
+          </button>
+        </form>
+
+        <p class="mt-3 text-center">
+          Chưa có tài khoản? <a href="/register">Đăng ký ngay</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

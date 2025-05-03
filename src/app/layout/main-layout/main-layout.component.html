@@ -1,0 +1,36 @@
+<div class="d-flex flex-column vh-100 gap-1" style="gap: 3px">
+  <!-- Header -->
+  <div
+    class="main-header d-flex justify-content-between align-items-center px-4 py-3 bg-white shadow-sm border-bottom"
+    style="margin-bottom: 3px"
+  >
+    <h5 class="mb-0 fw-bold text-primary">Hệ thống quản lý tiêm chủng</h5>
+    <div class="user-info d-flex align-items-center">
+      <img
+        src="path/to/avatar.png"
+        alt="Avatar"
+        class="rounded-circle me-2 border"
+        width="36"
+        height="36"
+      />
+      <span class="fw-medium">UserName</span>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="d-flex flex-grow-1 gap-1" style="gap: 3px">
+    <!-- Sidebar -->
+    <app-sidebar
+      class="shadow-sm bg-white"
+      style="width: 240px; min-width: 240px; margin-right: 3px"
+    ></app-sidebar>
+
+    <!-- Main content -->
+    <div
+      class="p-4 overflow-auto flex-grow-1 bg-white shadow-sm"
+      style="margin-left: 0"
+    >
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,10 @@
+/* Khoảng cách 3px giữa các thành phần chính */
+.layout-item {
+  margin-bottom: 3px;
+}
+
+app-sidebar {
+  width: 240px;
+  min-width: 240px;
+  margin-right: 3px; /* tạo khoảng cách với nội dung */
+}
