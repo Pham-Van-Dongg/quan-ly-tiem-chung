@@ -1,0 +1,139 @@
+<div class="container-fluid p-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="text-primary fw-bold">Quản lý đợt tiêm</h4>
+    <button
+      class="btn btn-success"
+      data-bs-toggle="modal"
+      data-bs-target="#modalDotTiem"
+      (click)="moFormThem()"
+    >
+      <i class="material-icons align-middle">add</i> Thêm đợt tiêm
+    </button>
+  </div>
+
+  <div class="table-responsive shadow-sm bg-white p-3 rounded">
+    <table class="table table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Tên đợt</th>
+          <th>Ngày bắt đầu</th>
+          <th>Ngày kết thúc</th>
+          <th>Khu vực</th>
+          <th>Trạng thái</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let dot of danhSachDotTiem; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ dot.tenDot }}</td>
+          <td>{{ dot.ngayBatDau | date : "dd/MM/yyyy" }}</td>
+          <td>{{ dot.ngayKetThuc | date : "dd/MM/yyyy" }}</td>
+          <td>{{ dot.khuVuc }}</td>
+          <td>
+            <span
+              class="badge"
+              [ngClass]="
+                dot.trangThai === 'Đang diễn ra' ? 'bg-success' : 'bg-secondary'
+              "
+            >
+              {{ dot.trangThai }}
+            </span>
+          </td>
+          <td>
+            <button
+              class="btn btn-sm btn-outline-primary me-1"
+              (click)="suaDot(dot)"
+            >
+              <i class="material-icons">edit</i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger" (click)="xoaDot(dot)">
+              <i class="material-icons">delete</i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="modal fade" id="modalDotTiem" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <form (ngSubmit)="luuDotTiem()">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Thêm / Sửa đợt tiêm</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+          ></button>
+        </div>
+        <div class="modal-body row g-3">
+          <div class="col-12">
+            <label class="form-label">Tên đợt tiêm</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="formDot.tenDot"
+              name="tenDot"
+              required
+            />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Ngày bắt đầu</label>
+            <input
+              type="date"
+              class="form-control"
+              [(ngModel)]="formDot.ngayBatDau"
+              name="ngayBatDau"
+              required
+            />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Ngày kết thúc</label>
+            <input
+              type="date"
+              class="form-control"
+              [(ngModel)]="formDot.ngayKetThuc"
+              name="ngayKetThuc"
+              required
+            />
+          </div>
+          <div class="col-12">
+            <label class="form-label">Khu vực</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="formDot.khuVuc"
+              name="khuVuc"
+              required
+            />
+          </div>
+          <div class="col-12">
+            <label class="form-label">Trạng thái</label>
+            <select
+              class="form-select"
+              [(ngModel)]="formDot.trangThai"
+              name="trangThai"
+            >
+              <option value="Đang diễn ra">Đang diễn ra</option>
+              <option value="Kết thúc">Kết thúc</option>
+              <option value="Sắp diễn ra">Sắp diễn ra</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Lưu</button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Hủy
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
