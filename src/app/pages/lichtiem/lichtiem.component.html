@@ -1,55 +1,116 @@
-<div class="container py-4">
-  <div class="card shadow-sm">
-    <div
-      class="card-header bg-success text-white d-flex justify-content-between align-items-center"
-    >
-      <h5 class="mb-0">Quản lý lịch tiêm</h5>
-      <button class="btn btn-light btn-sm">
-        <i class="bi bi-plus-circle me-1"></i> Thêm lịch tiêm
-      </button>
-    </div>
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-bordered table-hover align-middle">
-          <thead class="table-light">
-            <tr>
-              <th>#</th>
-              <th>Họ tên</th>
-              <th>Ngày sinh</th>
-              <th>Vắc xin</th>
-              <th>Mũi số</th>
-              <th>Ngày tiêm</th>
-              <th>Địa điểm</th>
-              <th>Trạng thái</th>
-              <th>Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>Nguyễn Văn A</td>
-              <td>01/01/2018</td>
-              <td>Viêm gan B</td>
-              <td>1</td>
-              <td>15/04/2025</td>
-              <td>Trạm y tế P.1</td>
-              <td><span class="badge bg-warning text-dark">Chưa tiêm</span></td>
-              <td>
-                <button class="btn btn-sm btn-info me-1">
-                  <i class="bi bi-eye"></i>
-                </button>
-                <button class="btn btn-sm btn-warning me-1">
-                  <i class="bi bi-pencil-square"></i>
-                </button>
-                <button class="btn btn-sm btn-danger">
-                  <i class="bi bi-trash"></i>
-                </button>
-              </td>
-            </tr>
-            <!-- Thêm dòng dữ liệu khác -->
-          </tbody>
-        </table>
-      </div>
+<div class="card shadow-sm">
+  <div
+    class="card-header bg-info text-white d-flex justify-content-between align-items-center"
+  >
+    <h5 class="mb-0">📅 Danh sách lịch tiêm</h5>
+    <button class="btn btn-light btn-sm" (click)="moPopupThem()">
+      ➕ Thêm lịch tiêm
+    </button>
+  </div>
+
+  <div class="card-body">
+    <table class="table table-bordered table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>Ngày tiêm</th>
+          <th>Loại vắc xin</th>
+          <th>Địa điểm</th>
+          <th>Trẻ đăng ký</th>
+          <th>Ghi chú</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let lich of danhSachLich">
+          <td>{{ lich.ngayTiem | date : "dd/MM/yyyy" }}</td>
+          <td>{{ lich.tenVaccine }}</td>
+          <td>{{ lich.diaDiem }}</td>
+          <td>{{ lich.soTreDangKy }}</td>
+          <td>{{ lich.ghiChu }}</td>
+          <td>
+            <button class="btn btn-sm btn-primary me-2" (click)="suaLich(lich)">
+              ✏️ Sửa
+            </button>
+            <button class="btn btn-sm btn-danger" (click)="xoaLich(lich)">
+              🗑️ Xoá
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Popup -->
+<div class="modal-backdrop fade show" *ngIf="popupMo"></div>
+
+<div class="modal fade show d-block" tabindex="-1" *ngIf="popupMo">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form (ngSubmit)="luuLich()">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">
+            {{ lichDangSua.id === 0 ? "Thêm" : "Cập nhật" }} lịch tiêm
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            (click)="popupMo = false"
+          ></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="mb-3">
+            <label>Ngày tiêm</label>
+            <input
+              type="date"
+              class="form-control"
+              [(ngModel)]="lichDangSua.ngayTiem"
+              name="ngayTiem"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label>Vắc xin</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="lichDangSua.tenVaccine"
+              name="tenVaccine"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label>Địa điểm</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="lichDangSua.diaDiem"
+              name="diaDiem"
+            />
+          </div>
+          <div class="mb-3">
+            <label>Ghi chú</label>
+            <textarea
+              class="form-control"
+              rows="2"
+              [(ngModel)]="lichDangSua.ghiChu"
+              name="ghiChu"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">💾 Lưu</button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="popupMo = false"
+          >
+            Đóng
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

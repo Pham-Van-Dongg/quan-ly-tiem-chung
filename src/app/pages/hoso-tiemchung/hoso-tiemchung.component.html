@@ -1,0 +1,54 @@
+<div class="card shadow-sm">
+  <div
+    class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+  >
+    <h5 class="mb-0">Hồ sơ tiêm chủng của bé</h5>
+    <button class="btn btn-light btn-sm" (click)="taiLai()">🔄 Tải lại</button>
+  </div>
+
+  <div class="card-body">
+    <div class="mb-3">
+      <label class="form-label fw-bold">Chọn bé:</label>
+      <select
+        class="form-select w-auto d-inline-block"
+        [(ngModel)]="beDuocChon"
+        (change)="taiHoSo()"
+      >
+        <option *ngFor="let be of danhSachBe" [ngValue]="be">
+          {{ be.ten }}
+        </option>
+      </select>
+    </div>
+
+    <table class="table table-bordered table-hover mt-3">
+      <thead class="table-light">
+        <tr>
+          <th>Vắc xin</th>
+          <th>Số mũi</th>
+          <th>Ngày tiêm</th>
+          <th>Trạng thái</th>
+          <th>Ghi chú</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let muc of hoSoTiemChung">
+          <td>{{ muc.tenVaccine }}</td>
+          <td>{{ muc.soMui }}</td>
+          <td>{{ muc.ngayTiem | date : "dd/MM/yyyy" }}</td>
+          <td>
+            <span
+              class="badge"
+              [ngClass]="{
+                'bg-success': muc.trangThai === 'Đã tiêm',
+                'bg-danger': muc.trangThai === 'Chưa tiêm'
+              }"
+            >
+              {{ muc.trangThai }}
+            </span>
+          </td>
+          <td>{{ muc.ghiChu }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

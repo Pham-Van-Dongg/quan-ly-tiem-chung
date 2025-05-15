@@ -1,3 +1,5 @@
+import { routes } from './app.routes';
+
 export interface MenuItem {
   label: string;
   icon: string;
@@ -10,4 +12,6 @@ export const MENU_ITEMS: MenuItem[] = [
   { label: 'Loại tiêm chủng', icon: 'history', route: '/loaitiemchung' },
   { label: 'Lịch tiêm', icon: 'bookmark', route: '/lichtiem' },
   { label: 'Loại vắc xin', icon: 'groups', route: '/loaivacxin' },
+  { label: 'Đợt tiêm', icon: 'group', route: '/dottiem' },
+  { label: 'Hồ sơ tiêm chủng', icon: 'group', route: '/hosotiemchung' },
 ];

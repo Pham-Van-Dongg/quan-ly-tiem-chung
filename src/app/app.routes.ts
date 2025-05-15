@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
+import { DottiemComponent } from './pages/dottiem/dottiem.component';
+import { HosoTiemchungComponent } from './pages/hoso-tiemchung/hoso-tiemchung.component';
 
 // Main layout (có sidebar)
 export const routes: Routes = [
@@ -44,6 +46,20 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/loaivacxin/loaivacxin.component').then(
             (m) => m.LoaivacxinComponent
+          ),
+      },
+      {
+        path: 'dottiem',
+        loadComponent: () =>
+          import('./pages/dottiem/dottiem.component').then(
+            (m) => m.DottiemComponent
+          ),
+      },
+      {
+        path: 'hosotiemchung',
+        loadComponent: () =>
+          import('./pages/hoso-tiemchung/hoso-tiemchung.component').then(
+            (m) => m.HosoTiemchungComponent
           ),
       },
     ],

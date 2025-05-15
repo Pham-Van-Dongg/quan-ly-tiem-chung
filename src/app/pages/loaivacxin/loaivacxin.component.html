@@ -1,48 +1,128 @@
-<div class="container py-4">
-  <div class="card shadow-sm">
-    <div
-      class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+<div class="container-fluid p-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="text-primary fw-bold">Quản lý loại vắc xin</h4>
+    <button
+      class="btn btn-success"
+      data-bs-toggle="modal"
+      data-bs-target="#modalVaccine"
+      (click)="moFormThem()"
     >
-      <h5 class="mb-0">Quản lý vắc xin</h5>
-      <button class="btn btn-light btn-sm">
-        <i class="bi bi-plus-circle me-1"></i> Thêm vắc xin
-      </button>
-    </div>
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-bordered table-hover align-middle">
-          <thead class="table-light">
-            <tr>
-              <th>#</th>
-              <th>Tên vắc xin</th>
-              <th>Loại</th>
-              <th>Nhà sản xuất</th>
-              <th>Số mũi</th>
-              <th>Thời gian cách mũi (ngày)</th>
-              <th>Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>Comirnaty (Pfizer)</td>
-              <td>COVID-19</td>
-              <td>Pfizer-BioNTech</td>
-              <td>2</td>
-              <td>21</td>
-              <td>
-                <button class="btn btn-sm btn-warning me-1">
-                  <i class="bi bi-pencil-square"></i>
-                </button>
-                <button class="btn btn-sm btn-danger">
-                  <i class="bi bi-trash"></i>
-                </button>
-              </td>
-            </tr>
-            <!-- Thêm các dòng dữ liệu khác tại đây -->
-          </tbody>
-        </table>
-      </div>
+      <i class="material-icons align-middle">add</i> Thêm loại vắc xin
+    </button>
+  </div>
+
+  <div class="table-responsive shadow-sm bg-white p-3 rounded">
+    <table class="table table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Tên vắc xin</th>
+          <th>Số mũi tiêm</th>
+          <th>Khoảng cách (ngày)</th>
+          <th>Đơn vị sản xuất</th>
+          <th>Mô tả</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let vac of danhSachVaccine; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ vac.ten }}</td>
+          <td>{{ vac.soMui }}</td>
+          <td>{{ vac.khoangCach }}</td>
+          <td>{{ vac.nhaSanXuat }}</td>
+          <td>{{ vac.moTa }}</td>
+          <td>
+            <button
+              class="btn btn-sm btn-outline-primary me-1"
+              (click)="suaVaccine(vac)"
+            >
+              <i class="material-icons">edit</i>
+            </button>
+            <button
+              class="btn btn-sm btn-outline-danger"
+              (click)="xoaVaccine(vac)"
+            >
+              <i class="material-icons">delete</i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="modal fade" id="modalVaccine" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <form (ngSubmit)="luuVaccine()">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Thêm / Sửa loại vắc xin</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+          ></button>
+        </div>
+        <div class="modal-body row g-3">
+          <div class="col-12">
+            <label class="form-label">Tên vắc xin</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="formVaccine.ten"
+              name="ten"
+              required
+            />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Số mũi tiêm</label>
+            <input
+              type="number"
+              class="form-control"
+              [(ngModel)]="formVaccine.soMui"
+              name="soMui"
+              required
+            />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Khoảng cách giữa các mũi (ngày)</label>
+            <input
+              type="number"
+              class="form-control"
+              [(ngModel)]="formVaccine.khoangCach"
+              name="khoangCach"
+            />
+          </div>
+          <div class="col-12">
+            <label class="form-label">Đơn vị sản xuất</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="formVaccine.nhaSanXuat"
+              name="nhaSanXuat"
+            />
+          </div>
+          <div class="col-12">
+            <label class="form-label">Mô tả</label>
+            <textarea
+              rows="2"
+              class="form-control"
+              [(ngModel)]="formVaccine.moTa"
+              name="moTa"
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Lưu</button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Hủy
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
