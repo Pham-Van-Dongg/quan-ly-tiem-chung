@@ -1,47 +1,56 @@
-<div class="card shadow-sm">
-  <div
-    class="card-header bg-info text-white d-flex justify-content-between align-items-center"
-  >
-    <h5 class="mb-0">📅 Danh sách lịch tiêm</h5>
-    <button class="btn btn-light btn-sm" (click)="moPopupThem()">
-      ➕ Thêm lịch tiêm
-    </button>
-  </div>
+<div class="container">
+  <div class="card shadow-sm" style="height: 89vh">
+    <!-- Header -->
+    <div
+      class="card-header bg-info text-white d-flex justify-content-between align-items-center"
+    >
+      <h5 class="mb-0">📅 Danh sách lịch tiêm</h5>
+      <button class="btn btn-light btn-sm" (click)="moPopupThem()">
+        ➕ Thêm lịch tiêm
+      </button>
+    </div>
 
-  <div class="card-body">
-    <table class="table table-bordered table-hover">
-      <thead class="table-light">
-        <tr>
-          <th>Ngày tiêm</th>
-          <th>Loại vắc xin</th>
-          <th>Địa điểm</th>
-          <th>Trẻ đăng ký</th>
-          <th>Ghi chú</th>
-          <th>Hành động</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let lich of danhSachLich">
-          <td>{{ lich.ngayTiem | date : "dd/MM/yyyy" }}</td>
-          <td>{{ lich.tenVaccine }}</td>
-          <td>{{ lich.diaDiem }}</td>
-          <td>{{ lich.soTreDangKy }}</td>
-          <td>{{ lich.ghiChu }}</td>
-          <td>
-            <button class="btn btn-sm btn-primary me-2" (click)="suaLich(lich)">
-              ✏️ Sửa
-            </button>
-            <button class="btn btn-sm btn-danger" (click)="xoaLich(lich)">
-              🗑️ Xoá
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- Body -->
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Ngày tiêm</th>
+              <th>Loại vắc xin</th>
+              <th>Địa điểm</th>
+              <th>Trẻ đăng ký</th>
+              <th>Ghi chú</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let lich of danhSachLich">
+              <td>{{ lich.ngayTiem | date : "dd/MM/yyyy" }}</td>
+              <td>{{ lich.tenVaccine }}</td>
+              <td>{{ lich.diaDiem }}</td>
+              <td>{{ lich.soTreDangKy }}</td>
+              <td>{{ lich.ghiChu }}</td>
+              <td>
+                <button
+                  class="btn btn-sm btn-primary me-2"
+                  (click)="suaLich(lich)"
+                >
+                  ✏️ Sửa
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="xoaLich(lich)">
+                  🗑️ Xoá
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- Popup -->
+<!-- Modal thêm/sửa lịch tiêm -->
 <div class="modal-backdrop fade show" *ngIf="popupMo"></div>
 
 <div class="modal fade show d-block" tabindex="-1" *ngIf="popupMo">
@@ -54,14 +63,14 @@
           </h5>
           <button
             type="button"
-            class="btn-close"
+            class="btn-close btn-close-white"
             (click)="popupMo = false"
           ></button>
         </div>
 
         <div class="modal-body">
           <div class="mb-3">
-            <label>Ngày tiêm</label>
+            <label class="form-label">Ngày tiêm</label>
             <input
               type="date"
               class="form-control"
@@ -70,8 +79,9 @@
               required
             />
           </div>
+
           <div class="mb-3">
-            <label>Vắc xin</label>
+            <label class="form-label">Vắc xin</label>
             <input
               type="text"
               class="form-control"
@@ -80,8 +90,9 @@
               required
             />
           </div>
+
           <div class="mb-3">
-            <label>Địa điểm</label>
+            <label class="form-label">Địa điểm</label>
             <input
               type="text"
               class="form-control"
@@ -89,8 +100,9 @@
               name="diaDiem"
             />
           </div>
+
           <div class="mb-3">
-            <label>Ghi chú</label>
+            <label class="form-label">Ghi chú</label>
             <textarea
               class="form-control"
               rows="2"

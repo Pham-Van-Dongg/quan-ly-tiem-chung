@@ -7,4 +7,5 @@ app-sidebar {
   width: 240px;
   min-width: 240px;
   margin-right: 3px; /* tạo khoảng cách với nội dung */
+  height: 30px;
 }
