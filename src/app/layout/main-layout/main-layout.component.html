@@ -18,7 +18,7 @@
   </div>
 
   <!-- Body -->
-  <div class="d-flex flex-grow-1 gap-1" style="gap: 3px">
+  <div class="d-flex flex-grow-1 gap-1" style="gap: 3px; height: auto">
     <!-- Sidebar -->
     <app-sidebar
       class="shadow-sm bg-white"
@@ -26,10 +26,7 @@
     ></app-sidebar>
 
     <!-- Main content -->
-    <div
-      class="p-4 overflow-auto flex-grow-1 bg-white shadow-sm"
-      style="margin-left: 0"
-    >
+    <div class="container" style="padding: 0px">
       <router-outlet></router-outlet>
     </div>
   </div>

@@ -1,35 +1,53 @@
-<h4 class="mb-3 fw-bold text-primary">Danh sách bé</h4>
-<button
-  class="btn btn-primary mb-3"
-  data-bs-toggle="modal"
-  data-bs-target="#themTreModal"
->
-  Thêm trẻ
-</button>
+<div class="container">
+  <div class="card shadow-sm" style="height: 89vh">
+    <!-- Header -->
+    <div
+      class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+    >
+      <h5 class="mb-0">Danh sách bé</h5>
+      <button
+        class="btn btn-light btn-sm"
+        data-bs-toggle="modal"
+        data-bs-target="#themTreModal"
+      >
+        <i class="bi bi-plus-circle me-1"></i> Thêm trẻ
+      </button>
+    </div>
 
-<table class="table table-bordered shadow-sm bg-white">
-  <thead class="table-light">
-    <tr>
-      <th>Họ tên</th>
-      <th>Ngày sinh</th>
-      <th>Giới tính</th>
-      <th>SĐT</th>
-      <th>Hành động</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let child of children">
-      <td>{{ child.hoTen }}</td>
-      <td>{{ child.ngaySinh | date }}</td>
-      <td>{{ child.gioiTinh }}</td>
-      <td>{{ child.soDienThoai }}</td>
-      <td>
-        <button class="btn btn-sm btn-primary me-1">Xem lịch tiêm</button>
-        <button class="btn btn-sm btn-secondary">Sửa</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+    <!-- Body -->
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered shadow-sm bg-white align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Họ tên</th>
+              <th>Ngày sinh</th>
+              <th>Giới tính</th>
+              <th>SĐT</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let child of children">
+              <td>{{ child.hoTen }}</td>
+              <td>{{ child.ngaySinh | date }}</td>
+              <td>{{ child.gioiTinh }}</td>
+              <td>{{ child.soDienThoai }}</td>
+              <td>
+                <button class="btn btn-sm btn-primary me-1">
+                  Xem lịch tiêm
+                </button>
+                <button class="btn btn-sm btn-secondary">Sửa</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal thêm trẻ -->
 <div
   class="modal fade"
   id="themTreModal"
