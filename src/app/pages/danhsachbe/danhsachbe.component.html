@@ -27,20 +27,30 @@
               <th>Hành động</th>
             </tr>
           </thead>
-          <tbody>
-            <tr *ngFor="let child of children">
-              <td>{{ child.hoTen }}</td>
-              <td>{{ child.ngaySinh | date }}</td>
-              <td>{{ child.gioiTinh }}</td>
-              <td>{{ child.soDienThoai }}</td>
-              <td>
-                <button class="btn btn-sm btn-primary me-1">
-                  Xem lịch tiêm
-                </button>
-                <button class="btn btn-sm btn-secondary">Sửa</button>
-              </td>
-            </tr>
-          </tbody>
+          <div *ngIf="apiStatus === 'loading'">⏳ Đang tải dữ liệu...</div>
+          <div *ngIf="apiStatus === 'error'" class="text-danger">
+            ❌ Không kết nối được máy chủ.
+          </div>
+          <div *ngIf="apiStatus === 'empty'" class="text-warning">
+            ⚠️ Không có dữ liệu.
+          </div>
+          <div *ngIf="apiStatus === 'success'">
+            <!-- Hiển thị danh sách children như trước -->
+            <tbody>
+              <tr *ngFor="let child of children">
+                <td>{{ child.hoTen }}</td>
+                <td>{{ child.ngaySinh | date }}</td>
+                <td>{{ child.gioiTinh }}</td>
+                <td>{{ child.soDienThoai }}</td>
+                <td>
+                  <button class="btn btn-sm btn-primary me-1">
+                    Xem lịch tiêm
+                  </button>
+                  <button class="btn btn-sm btn-secondary">Sửa</button>
+                </td>
+              </tr>
+            </tbody>
+          </div>
         </table>
       </div>
     </div>
