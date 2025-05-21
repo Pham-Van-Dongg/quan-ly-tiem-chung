@@ -4,7 +4,7 @@ import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { DottiemComponent } from './pages/dottiem/dottiem.component';
 import { HosoTiemchungComponent } from './pages/hoso-tiemchung/hoso-tiemchung.component';
-
+import { provideHttpClient } from '@angular/common/http';
 // Main layout (có sidebar)
 export const routes: Routes = [
   {
@@ -18,6 +18,7 @@ export const routes: Routes = [
         path: '',
         loadComponent: () =>
           import('./pages/home/home.component').then((m) => m.HomeComponent),
+
         pathMatch: 'full',
       },
       {
@@ -26,6 +27,7 @@ export const routes: Routes = [
           import('./pages/danhsachbe/danhsachbe.component').then(
             (m) => m.DanhsachbeComponent
           ),
+        providers: [provideHttpClient()],
       },
       {
         path: 'loaitiemchung',
