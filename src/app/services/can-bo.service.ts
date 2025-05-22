@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CanBoYte } from '../pages/canboyte/canboyte.model';
-
+import { CanBoYte } from '../model/model-chung.model';
 @Injectable({
   providedIn: 'root',
 })
