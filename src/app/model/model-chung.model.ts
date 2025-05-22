@@ -16,10 +16,10 @@ export interface LichTiem {
   ngayTiem: DateObject;
   muiThu: number;
   trangThai: string;
-  maCbNavigation?: string;
-  maDotNavigation?: DotTiem;
-  maNdNavigation?: NguoiDung;
-  maVacNavigation?: Vaccine;
+  maCbNavigation?: CanBoYte | null;
+  maDotNavigation?: DotTiem | null;
+  maNdNavigation?: NguoiDung | null;
+  maVacNavigation?: Vaccine | null;
 }
 
 export interface DateObject {
