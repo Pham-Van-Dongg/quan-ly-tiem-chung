@@ -4,7 +4,9 @@ import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { DottiemComponent } from './pages/dottiem/dottiem.component';
 import { HosoTiemchungComponent } from './pages/hoso-tiemchung/hoso-tiemchung.component';
+
 import { provideHttpClient } from '@angular/common/http';
+import { CanboyteComponent } from './pages/canboyte/canboyte.component';
 // Main layout (có sidebar)
 export const routes: Routes = [
   {
@@ -40,7 +42,7 @@ export const routes: Routes = [
         path: 'lichtiem',
         loadComponent: () =>
           import('./pages/lichtiem/lichtiem.component').then(
-            (m) => m.LichtiemComponent
+            (m) => m.LichTiemComponent
           ),
       },
       {
@@ -62,6 +64,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/hoso-tiemchung/hoso-tiemchung.component').then(
             (m) => m.HosoTiemchungComponent
+          ),
+      },
+      {
+        path: 'canboyte',
+        loadComponent: () =>
+          import('./pages/canboyte/canboyte.component').then(
+            (m) => m.CanboyteComponent
           ),
       },
     ],

@@ -14,4 +14,5 @@ export const MENU_ITEMS: MenuItem[] = [
   { label: 'Loại vắc xin', icon: 'science', route: '/loaivacxin' },
   { label: 'Đợt tiêm', icon: 'calendar_month', route: '/dottiem' },
   { label: 'Hồ sơ tiêm chủng', icon: 'folder_shared', route: '/hosotiemchung' },
+  { label: 'Cán bộ y tế', icon: 'event_note', route: '/canboyte' },
 ];
