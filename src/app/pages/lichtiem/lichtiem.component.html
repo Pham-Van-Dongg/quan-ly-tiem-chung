@@ -26,21 +26,44 @@
         <table class="table table-bordered table-hover align-middle">
           <thead class="table-light">
             <tr>
-              <th>Ngày tiêm</th>
-              <th>Vắc xin</th>
-              <th>Địa điểm</th>
-              <th>Cán bộ phụ trách</th>
-              <th>Trạng thái</th>
+              <th>#</th>
+              <th (click)="sort('ngayTiem')" style="cursor: pointer">
+                Ngày tiêm
+                <span *ngIf="sortKey === 'ngayTiem'">{{
+                  sortDirection === "asc" ? "↑" : "↓"
+                }}</span>
+              </th>
+              <th (click)="sort('maVacNavigation')" style="cursor: pointer">
+                Vắc xin
+                <span *ngIf="sortKey === 'maVacNavigation'">{{
+                  sortDirection === "asc" ? "↑" : "↓"
+                }}</span>
+              </th>
+              <th (click)="sort('maDotNavigation')" style="cursor: pointer">
+                Địa điểm
+                <span *ngIf="sortKey === 'maDotNavigation'">{{
+                  sortDirection === "asc" ? "↑" : "↓"
+                }}</span>
+              </th>
+              <th (click)="sort('maCbNavigation')" style="cursor: pointer">
+                Cán bộ phụ trách
+                <span *ngIf="sortKey === 'maCbNavigation'">{{
+                  sortDirection === "asc" ? "↑" : "↓"
+                }}</span>
+              </th>
+              <th (click)="sort('trangThai')" style="cursor: pointer">
+                Trạng thái
+                <span *ngIf="sortKey === 'trangThai'">{{
+                  sortDirection === "asc" ? "↑" : "↓"
+                }}</span>
+              </th>
               <th>Hành động</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let lich of danhSachLich">
-              <td>
-                {{ lich.ngayTiem.year }}-{{ lich.ngayTiem.month }}-{{
-                  lich.ngayTiem.day
-                }}
-              </td>
+            <tr *ngFor="let lich of lichTiemHienThi; let i = index">
+              <td>{{ i + 1 + (trangHienTai - 1) * kichThuocTrang }}</td>
+              <td>{{ formatDateObject(lich.ngayTiem) }}</td>
               <td>{{ lich.maVacNavigation?.tenVac }}</td>
               <td>{{ lich.maDotNavigation?.diaDiem }}</td>
               <td>{{ lich.maCbNavigation?.hoTen }}</td>
@@ -117,48 +140,23 @@
             <button
               type="button"
               class="btn-close btn-close-white"
-              (click)="dongPopup()"
+              (click)="closeModal()"
               aria-label="Close"
             ></button>
           </div>
           <div class="modal-body">
             <div class="row g-3">
-              <div class="col-md-4">
-                <label for="ngayTiemDay" class="form-label">Ngày Tiêm</label>
-                <input
-                  id="ngayTiemDay"
-                  formControlName="day"
-                  type="number"
-                  min="1"
-                  max="31"
-                  class="form-control"
-                  placeholder="Ngày"
-                />
+              <div class="col-md-6">
+                <label for="maNd" class="form-label">Người dùng</label>
+                <select id="maNd" formControlName="maNd" class="form-select">
+                  <option
+                    *ngFor="let nd of danhSachNguoiDung"
+                    [value]="nd.maNd"
+                  >
+                    {{ nd.hoTen }}
+                  </option>
+                </select>
               </div>
-              <div class="col-md-4">
-                <label for="ngayTiemMonth" class="form-label">&nbsp;</label>
-                <input
-                  id="ngayTiemMonth"
-                  formControlName="month"
-                  type="number"
-                  min="1"
-                  max="12"
-                  class="form-control"
-                  placeholder="Tháng"
-                />
-              </div>
-              <div class="col-md-4">
-                <label for="ngayTiemYear" class="form-label">&nbsp;</label>
-                <input
-                  id="ngayTiemYear"
-                  formControlName="year"
-                  type="number"
-                  min="1900"
-                  class="form-control"
-                  placeholder="Năm"
-                />
-              </div>
-
               <div class="col-md-6">
                 <label for="maVac" class="form-label">Vắc xin</label>
                 <select id="maVac" formControlName="maVac" class="form-select">
@@ -167,7 +165,6 @@
                   </option>
                 </select>
               </div>
-
               <div class="col-md-6">
                 <label for="maDot" class="form-label"
                   >Địa điểm (Đợt tiêm)</label
@@ -181,7 +178,6 @@
                   </option>
                 </select>
               </div>
-
               <div class="col-md-6">
                 <label for="maCb" class="form-label">Cán bộ phụ trách</label>
                 <select id="maCb" formControlName="maCb" class="form-select">
@@ -190,7 +186,15 @@
                   </option>
                 </select>
               </div>
-
+              <div class="col-md-6">
+                <label for="ngayTiem" class="form-label">Ngày tiêm</label>
+                <input
+                  id="ngayTiem"
+                  formControlName="ngayTiem"
+                  type="date"
+                  class="form-control"
+                />
+              </div>
               <div class="col-md-6">
                 <label for="muiThu" class="form-label">Mũi thứ</label>
                 <input
@@ -201,15 +205,17 @@
                   class="form-control"
                 />
               </div>
-
               <div class="col-md-12">
                 <label for="trangThai" class="form-label">Trạng thái</label>
-                <input
+                <select
                   id="trangThai"
                   formControlName="trangThai"
-                  type="text"
-                  class="form-control"
-                />
+                  class="form-select"
+                >
+                  <option value="Chưa tiêm">Chưa tiêm</option>
+                  <option value="Đã tiêm">Đã tiêm</option>
+                  <option value="Hủy">Hủy</option>
+                </select>
               </div>
             </div>
           </div>
@@ -217,9 +223,9 @@
             <button
               type="button"
               class="btn btn-secondary"
-              (click)="dongPopup()"
+              (click)="closeModal()"
             >
-              Huỷ
+              Hủy
             </button>
             <button type="submit" class="btn btn-primary">
               {{ isEdit ? "Lưu thay đổi" : "Thêm mới" }}
