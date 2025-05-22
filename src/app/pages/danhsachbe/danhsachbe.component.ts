@@ -43,7 +43,7 @@ export class DanhsachbeComponent implements OnInit {
     this.dangTai = true;
     this.loiTaiDuLieu = false;
 
-    this.http.get<any[]>('https://your-api-url/api/tre').subscribe({
+    this.http.get<any[]>('http://localhost:7025/api/LichTiems').subscribe({
       next: (data) => {
         this.children = data;
         this.dangTai = false;

@@ -1,74 +1,76 @@
 declare var bootstrap: any;
 import { CommonModule, NgFor } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
+import { LichTiemService } from '../../services/lich-tiem.service';
 @Component({
   selector: 'app-lichtiem',
+  standalone: true,
   imports: [NgFor, CommonModule, FormsModule],
   templateUrl: './lichtiem.component.html',
   styleUrl: './lichtiem.component.css',
 })
-export class LichtiemComponent {
-  danhSachLich: any[] = [
-    {
-      id: 1,
-      ngayTiem: new Date('2025-06-01'),
-      tenVaccine: 'Vắc xin 5 trong 1',
-      diaDiem: 'Trạm Y tế phường 3',
-      soTreDangKy: 12,
-      ghiChu: 'Ưu tiên trẻ dưới 12 tháng',
-    },
-    {
-      id: 2,
-      ngayTiem: new Date('2025-06-10'),
-      tenVaccine: 'Vắc xin sởi - quai bị - rubella',
-      diaDiem: 'Trung tâm y tế quận 5',
-      soTreDangKy: 20,
-      ghiChu: '',
-    },
-  ];
+export class LichTiemComponent implements OnInit {
+  danhSachLich: any[] = [];
+  popupMo = false;
+  lichDangSua: any = {};
 
-  popupMo: boolean = false;
-  lichDangSua: any = this.khoiTaoLich();
+  constructor(private lichTiemService: LichTiemService) {}
+
+  ngOnInit(): void {
+    this.layTatCaLichTiem();
+  }
+
+  layTatCaLichTiem() {
+    this.lichTiemService.layTatCa().subscribe({
+      next: (res) => {
+        this.danhSachLich = res;
+      },
+      error: (err) => {
+        console.error('Lỗi lấy danh sách lịch tiêm:', err);
+      },
+    });
+  }
 
   moPopupThem() {
-    this.lichDangSua = this.khoiTaoLich();
+    this.lichDangSua = {
+      ngayTiem: {
+        year: new Date().getFullYear(),
+        month: new Date().getMonth() + 1,
+        day: new Date().getDate(),
+      },
+      maVacNavigation: {},
+      maDotNavigation: {},
+      maNdNavigation: {},
+      trangThai: 'Sắp diễn ra',
+    };
     this.popupMo = true;
   }
 
   suaLich(lich: any) {
-    this.lichDangSua = { ...lich }; // clone lại tránh thay đổi gốc
+    this.lichDangSua = { ...lich };
     this.popupMo = true;
   }
 
-  xoaLich(lich: any) {
-    if (confirm(`Bạn có chắc muốn xoá lịch tiêm ngày ${lich.ngayTiem}?`)) {
-      this.danhSachLich = this.danhSachLich.filter((l) => l.id !== lich.id);
-    }
-  }
-
   luuLich() {
-    if (this.lichDangSua.id === 0) {
-      this.lichDangSua.id = this.danhSachLich.length + 1;
-      this.danhSachLich.push(this.lichDangSua);
+    if (this.lichDangSua.maLichTiem) {
+      this.lichTiemService.sua(this.lichDangSua).subscribe(() => {
+        this.layTatCaLichTiem();
+        this.popupMo = false;
+      });
     } else {
-      const index = this.danhSachLich.findIndex(
-        (l) => l.id === this.lichDangSua.id
-      );
-      if (index !== -1) this.danhSachLich[index] = this.lichDangSua;
+      this.lichTiemService.them(this.lichDangSua).subscribe(() => {
+        this.layTatCaLichTiem();
+        this.popupMo = false;
+      });
     }
-    this.popupMo = false;
   }
 
-  khoiTaoLich() {
-    return {
-      id: 0,
-      ngayTiem: '',
-      tenVaccine: '',
-      diaDiem: '',
-      soTreDangKy: 0,
-      ghiChu: '',
-    };
+  xoaLich(lich: any) {
+    if (confirm('Bạn có chắc muốn xóa lịch tiêm này?')) {
+      this.lichTiemService.xoa(lich.maLichTiem).subscribe(() => {
+        this.layTatCaLichTiem();
+      });
+    }
   }
 }
