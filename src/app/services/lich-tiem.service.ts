@@ -1,48 +1,47 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import {
+  LichTiem,
+  Vaccine,
+  DotTiem,
+  NguoiDung,
+} from '../model/model-chung.model';
 @Injectable({ providedIn: 'root' })
 export class LichTiemService {
   private apiUrl = 'http://localhost:7025/api/LichTiems';
 
   constructor(private http: HttpClient) {}
 
-  // Lấy danh sách lịch tiêm
-  getDanhSach(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/LichTiems`);
-  }
-  layTatCa(): Observable<any[]> {
-    return this.http.get<any[]>(`/api/LichTiems`);
+  getAllLichTiem(): Observable<LichTiem[]> {
+    return this.http.get<LichTiem[]>(`${this.apiUrl}/LichTiems`);
   }
 
-  // Lấy danh sách vaccine
-  getDanhSachVac(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/Vaccines`);
+  getLichTiemById(id: number): Observable<LichTiem> {
+    return this.http.get<LichTiem>(`${this.apiUrl}/LichTiems/${id}`);
   }
 
-  // Lấy danh sách đợt tiêm
-  getDanhSachDotTiem(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/DotTiems`);
+  createLichTiem(lichTiem: Partial<LichTiem>): Observable<LichTiem> {
+    return this.http.post<LichTiem>(`${this.apiUrl}/LichTiems`, lichTiem);
   }
 
-  // Lấy danh sách cán bộ y tế
-  getDanhSachCanBo(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/CanBoYTes`);
+  updateLichTiem(id: number, lichTiem: Partial<LichTiem>): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/LichTiems/${id}`, lichTiem);
   }
 
-  // Thêm lịch tiêm
-  themLich(lichMoi: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/LichTiems`, lichMoi);
+  deleteLichTiem(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/LichTiems/${id}`);
   }
 
-  // Sửa lịch tiêm
-  suaLich(id: number, lichCapNhat: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/LichTiems/${id}`, lichCapNhat);
+  getDanhSachVac(): Observable<Vaccine[]> {
+    return this.http.get<Vaccine[]>(`${this.apiUrl}/Vaccines`);
   }
 
-  // Xóa lịch tiêm
-  xoaLich(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/LichTiems/${id}`);
+  getDanhSachDotTiem(): Observable<DotTiem[]> {
+    return this.http.get<DotTiem[]>(`${this.apiUrl}/DotTiems`);
+  }
+
+  getDanhSachNguoiDung(): Observable<NguoiDung[]> {
+    return this.http.get<NguoiDung[]>(`${this.apiUrl}/NguoiDungs`); // Giả định endpoint
   }
 }
