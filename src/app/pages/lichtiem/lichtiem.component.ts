@@ -1,76 +1,204 @@
 declare var bootstrap: any;
 import { CommonModule, NgFor } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormsModule,
+  Validator,
+  Validators,
+} from '@angular/forms';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+
 import { LichTiemService } from '../../services/lich-tiem.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
 @Component({
   selector: 'app-lichtiem',
   standalone: true,
-  imports: [NgFor, CommonModule, FormsModule],
+  imports: [NgFor, CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './lichtiem.component.html',
   styleUrl: './lichtiem.component.css',
 })
 export class LichTiemComponent implements OnInit {
   danhSachLich: any[] = [];
-  popupMo = false;
-  lichDangSua: any = {};
+  danhSachVac: any[] = [];
+  danhSachDotTiem: any[] = [];
+  danhSachCanBo: any[] = [];
+  lichTiemLoc: any[] = [];
+  lichTiemHienThi: any[] = [];
 
-  constructor(private lichTiemService: LichTiemService) {}
+  tuKhoa: string = '';
+  trangHienTai = 1;
+  kichThuocTrang = 5;
+  tongSoTrang = 1;
+  tongTrangArray: number[] = [];
 
-  ngOnInit(): void {
+  lichTiemForm!: FormGroup;
+  isEdit = false;
+  currentEditingId: number | null = null;
+
+  constructor(
+    private lichTiemService: LichTiemService,
+    private fb: FormBuilder,
+    private modalService: NgbModal
+  ) {}
+
+  ngOnInit() {
+    this.loadDanhSachVac();
+    this.loadDanhSachDotTiem();
+    this.loadDanhSachCanBo();
+    this.initForm();
     this.layTatCaLichTiem();
   }
 
   layTatCaLichTiem() {
-    this.lichTiemService.layTatCa().subscribe({
-      next: (res) => {
-        this.danhSachLich = res;
-      },
-      error: (err) => {
-        console.error('Lỗi lấy danh sách lịch tiêm:', err);
-      },
+    this.lichTiemService.layTatCa().subscribe((res: any[]) => {
+      this.danhSachLich = res;
+      this.timKiem();
+    });
+  }
+
+  timKiem() {
+    const keyword = this.tuKhoa.toLowerCase().trim();
+    this.lichTiemLoc = this.danhSachLich.filter(
+      (lich) =>
+        lich.maNdNavigation?.hoTen?.toLowerCase().includes(keyword) ||
+        lich.maVacNavigation?.tenVac?.toLowerCase().includes(keyword) ||
+        lich.maDotNavigation?.diaDiem?.toLowerCase().includes(keyword)
+    );
+    this.trangHienTai = 1;
+    this.capNhatPhanTrang();
+  }
+
+  capNhatPhanTrang() {
+    const batDau = (this.trangHienTai - 1) * this.kichThuocTrang;
+    const ketThuc = batDau + this.kichThuocTrang;
+
+    this.lichTiemHienThi = this.lichTiemLoc.slice(batDau, ketThuc);
+    this.tongSoTrang = Math.ceil(this.lichTiemLoc.length / this.kichThuocTrang);
+    this.tongTrangArray = Array.from(
+      { length: this.tongSoTrang },
+      (_, i) => i + 1
+    );
+  }
+
+  chuyenTrang(trangMoi: number) {
+    if (trangMoi >= 1 && trangMoi <= this.tongSoTrang) {
+      this.trangHienTai = trangMoi;
+      this.capNhatPhanTrang();
+    }
+  }
+
+  loadDanhSachVac() {
+    this.lichTiemService.getDanhSachVac().subscribe((data) => {
+      this.danhSachVac = data;
+    });
+  }
+
+  loadDanhSachDotTiem() {
+    this.lichTiemService.getDanhSachDotTiem().subscribe((data) => {
+      this.danhSachDotTiem = data;
+    });
+  }
+
+  loadDanhSachCanBo() {
+    this.lichTiemService.getDanhSachCanBo().subscribe((data) => {
+      this.danhSachCanBo = data;
+    });
+  }
+
+  initForm() {
+    this.lichTiemForm = this.fb.group({
+      year: [new Date().getFullYear(), Validators.required],
+      month: [new Date().getMonth() + 1, Validators.required],
+      day: [new Date().getDate(), Validators.required],
+      maVac: [null, Validators.required],
+      maDot: [null, Validators.required],
+      maCb: [null, Validators.required],
+      muiThu: [1, Validators.required],
+      trangThai: ['', Validators.required],
     });
   }
 
   moPopupThem() {
-    this.lichDangSua = {
-      ngayTiem: {
-        year: new Date().getFullYear(),
-        month: new Date().getMonth() + 1,
-        day: new Date().getDate(),
-      },
-      maVacNavigation: {},
-      maDotNavigation: {},
-      maNdNavigation: {},
-      trangThai: 'Sắp diễn ra',
-    };
-    this.popupMo = true;
+    this.isEdit = false;
+    this.currentEditingId = null;
+    this.lichTiemForm.reset({
+      year: new Date().getFullYear(),
+      month: new Date().getMonth() + 1,
+      day: new Date().getDate(),
+      muiThu: 1,
+      trangThai: '',
+    });
+    const modal = document.getElementById('modalLichTiem');
+    if (modal) {
+      new bootstrap.Modal(modal).show();
+    }
   }
 
   suaLich(lich: any) {
-    this.lichDangSua = { ...lich };
-    this.popupMo = true;
+    this.isEdit = true;
+    this.currentEditingId = lich.maLichTiem;
+    this.lichTiemForm.patchValue({
+      year: lich.ngayTiem.year,
+      month: lich.ngayTiem.month,
+      day: lich.ngayTiem.day,
+      maVac: lich.maVac,
+      maDot: lich.maDot,
+      maCb: lich.maCb,
+      muiThu: lich.muiThu,
+      trangThai: lich.trangThai,
+    });
+    const modal = document.getElementById('modalLichTiem');
+    if (modal) {
+      new bootstrap.Modal(modal).show();
+    }
   }
 
-  luuLich() {
-    if (this.lichDangSua.maLichTiem) {
-      this.lichTiemService.sua(this.lichDangSua).subscribe(() => {
-        this.layTatCaLichTiem();
-        this.popupMo = false;
-      });
+  dongPopup() {
+    const modal = document.getElementById('modalLichTiem');
+    if (modal) {
+      const bsModal = bootstrap.Modal.getInstance(modal);
+      if (bsModal) bsModal.hide();
+    }
+  }
+
+  onSubmit() {
+    if (this.lichTiemForm.invalid) return;
+
+    const formData = this.lichTiemForm.value;
+    const lichMoi = {
+      ngayTiem: {
+        year: formData.year,
+        month: formData.month,
+        day: formData.day,
+      },
+      maVac: formData.maVac,
+      maDot: formData.maDot,
+      maCb: formData.maCb,
+      muiThu: formData.muiThu,
+      trangThai: formData.trangThai,
+    };
+
+    if (this.isEdit && this.currentEditingId) {
+      this.lichTiemService
+        .suaLich(this.currentEditingId, lichMoi)
+        .subscribe(() => {
+          this.layTatCaLichTiem();
+          this.dongPopup();
+        });
     } else {
-      this.lichTiemService.them(this.lichDangSua).subscribe(() => {
+      this.lichTiemService.themLich(lichMoi).subscribe(() => {
         this.layTatCaLichTiem();
-        this.popupMo = false;
+        this.dongPopup();
       });
     }
   }
 
   xoaLich(lich: any) {
-    if (confirm('Bạn có chắc muốn xóa lịch tiêm này?')) {
-      this.lichTiemService.xoa(lich.maLichTiem).subscribe(() => {
-        this.layTatCaLichTiem();
-      });
-    }
+    if (!confirm('Bạn có chắc muốn xoá lịch tiêm này?')) return;
+    this.lichTiemService.xoaLich(lich.maLichTiem).subscribe(() => {
+      this.layTatCaLichTiem();
+    });
   }
 }

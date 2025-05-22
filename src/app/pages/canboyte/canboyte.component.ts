@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { CanBoYteService } from '../../services/can-bo.service';
-import { CanBoYte, LichTiem, DateObject } from './canboyte.model';
+import { CanBoYte, LichTiem, DateObject } from '../../model/model-chung.model';
 
 @Component({
   selector: 'app-canboyte',
