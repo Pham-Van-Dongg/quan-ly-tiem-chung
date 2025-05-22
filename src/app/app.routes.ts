@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
-import { DottiemComponent } from './pages/dottiem/dottiem.component';
 import { HosoTiemchungComponent } from './pages/hoso-tiemchung/hoso-tiemchung.component';
 
 import { provideHttpClient } from '@angular/common/http';
@@ -56,7 +55,7 @@ export const routes: Routes = [
         path: 'dottiem',
         loadComponent: () =>
           import('./pages/dottiem/dottiem.component').then(
-            (m) => m.DottiemComponent
+            (m) => m.DotTiemComponent
           ),
       },
       {
