@@ -1,40 +1,45 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+
 import { CanBoYte } from '../model/model-chung.model';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root',
 })
 export class CanBoYteService {
-  private apiUrl = 'http://localhost:7025/api/CanBoYtes'; //
+  private apiUrl = 'https://localhost:7025/api/CanBoYtes'; //
 
   constructor(private http: HttpClient) {}
 
-  getCanBoYtes(): Observable<CanBoYte[]> {
-    return this.http.get<CanBoYte[]>(this.apiUrl);
+  getDanhSachCanBo(): Observable<CanBoYte[]> {
+    return this.http.get<CanBoYte[]>(this.apiUrl).pipe(
+      catchError((error) => {
+        console.error('Lỗi khi gọi API:', error);
+        return throwError(() => new Error('Không thể tải danh sách cán bộ.'));
+      })
+    );
   }
-
-  getCanBoById(maCb: number): Observable<CanBoYte> {
-    return this.http.get<CanBoYte>(`${this.apiUrl}/${maCb}`);
-  }
-
   addCanBo(canBo: CanBoYte): Observable<CanBoYte> {
-    return this.http.post<CanBoYte>(this.apiUrl, {
-      ...canBo,
-      maCb: 0, // Backend tự sinh maCb
-      lichTiems: [], // Gửi mảng rỗng vì form không nhập lịch tiêm
-    });
+    return this.http.post<CanBoYte>(`${this.apiUrl}`, canBo).pipe(
+      catchError((err) => {
+        console.error('Lỗi khi thêm cán bộ:', err);
+        return throwError(() => new Error('Không thể thêm cán bộ.'));
+      })
+    );
   }
-
-  updateCanBo(maCb: number, canBo: CanBoYte): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${maCb}`, {
-      ...canBo,
-      maCb, // Đảm bảo gửi đúng maCb
-      lichTiems: canBo.lichTiems || [], // Gửi lichTiems nếu có
-    });
+  getCanBoById(maCb: number): Observable<CanBoYte> {
+    return this.http.get<CanBoYte>(`${this.apiUrl}/${maCb}`).pipe(
+      catchError((error) => {
+        console.error('Lỗi khi gọi API chi tiết:', error);
+        return throwError(() => new Error('Không thể tải chi tiết cán bộ.'));
+      })
+    );
   }
-
-  deleteCanBo(maCb: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${maCb}`);
+  updateCanBo(maCb: number, canBo: any): Observable<any> {
+    return this.http.put(`https://localhost:7025/api/CanBoYtes/${maCb}`, canBo);
+  }
+  deleteCanBo(maCb: number): Observable<any> {
+    return this.http.delete(`https://localhost:7025/api/CanBoYtes/${maCb}`);
   }
 }
