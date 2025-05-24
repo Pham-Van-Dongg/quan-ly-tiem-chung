@@ -6,219 +6,239 @@
     >
       <div>
         <h5 class="mb-0">📋 Quản lý đợt tiêm</h5>
-        <div class="mt-2">
-          <input
-            type="text"
-            class="form-control form-control-sm"
-            placeholder="Tìm kiếm theo khu vực..."
-            [(ngModel)]="searchTerm"
-            (input)="onSearch()"
-          />
-        </div>
+        <button
+          class="btn btn-light btn-sm"
+          data-bs-toggle="modal"
+          data-bs-target="#themDotTiemModal"
+        >
+          ➕ Thêm đợt tiêm
+        </button>
       </div>
-      <button class="btn btn-light btn-sm" (click)="moFormThem()">
-        ➕ Thêm đợt tiêm
-      </button>
     </div>
 
     <!-- Body -->
-    <div class="card-body">
-      <div class="table-responsive">
+    <div class="card-body d-flex flex-column" style="height: 100%">
+      <!-- Tìm kiếm -->
+      <div class="mb-3">
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="tuKhoaTimKiem"
+          placeholder="Tìm kiếm theo mã đợt tiêm"
+          style="width: 350px"
+        />
+      </div>
+
+      <!-- Hiển thị lỗi -->
+      <div *ngIf="error" class="alert alert-danger">Lỗi: {{ error }}</div>
+      <!-- Bảng danh sách -->
+      <div class="table-responsive flex-grow-1">
         <table class="table table-bordered table-hover align-middle">
           <thead class="table-light">
             <tr>
-              <th>#</th>
-              <th>Tên đợt</th>
-              <th class="sortable" (click)="sort('ngayBatDau')">
-                Ngày bắt đầu
-                <span
-                  *ngIf="sortField === 'ngayBatDau'"
-                  [ngClass]="
-                    sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'
-                  "
-                ></span>
-              </th>
-              <th class="sortable" (click)="sort('ngayKetThuc')">
-                Ngày kết thúc
-                <span
-                  *ngIf="sortField === 'ngayKetThuc'"
-                  [ngClass]="
-                    sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'
-                  "
-                ></span>
-              </th>
-              <th>Khu vực</th>
-              <th>Trạng thái</th>
-              <th>Hành động</th>
+              <th>STT</th>
+              <th>Mã đợt</th>
+              <th>Ngày bắt đầu</th>
+              <th>Ngày kết thúc</th>
+              <th>Địa điểm</th>
+              <th>Thao tác</th>
             </tr>
           </thead>
-          <tbody>
-            <tr *ngFor="let dot of getPaginatedDotTiem(); let i = index">
-              <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
-              <td>Đợt tiêm {{ dot.maDot }}</td>
-              <td>
-                {{ formatDateObject(dot.ngayBatDau) | date : "dd/MM/yyyy" }}
-              </td>
-              <td>
-                {{ formatDateObject(dot.ngayKetThuc) | date : "dd/MM/yyyy" }}
-              </td>
-              <td>{{ dot.diaDiem }}</td>
-              <td>
-                <span
-                  class="badge"
-                  [ngClass]="{
-                    'bg-success':
-                      tinhTrangThai(dot.ngayBatDau, dot.ngayKetThuc) ===
-                      'Đang diễn ra',
-                    'bg-secondary':
-                      tinhTrangThai(dot.ngayBatDau, dot.ngayKetThuc) ===
-                      'Kết thúc',
-                    'bg-warning text-dark':
-                      tinhTrangThai(dot.ngayBatDau, dot.ngayKetThuc) ===
-                      'Sắp diễn ra'
-                  }"
-                >
-                  {{ tinhTrangThai(dot.ngayBatDau, dot.ngayKetThuc) }}
-                </span>
-              </td>
+          <tbody *ngIf="danhSachDotTiem.length > 0; else khongCoData">
+            <tr
+              *ngFor="
+                let dotTiem of danhSachDotTiem
+                  | dotTiemFilter : tuKhoaTimKiem
+                  | paginate : { itemsPerPage: 9, currentPage: page };
+                let i = index
+              "
+            >
+              <td>{{ i + 1 }}</td>
+              <td>{{ dotTiem.maDot }}</td>
+              <td>{{ dotTiem.ngayBatDau }}</td>
+              <td>{{ dotTiem.ngayKetThuc }}</td>
+              <td>{{ dotTiem.diaDiem }}</td>
               <td>
                 <button
                   class="btn btn-sm btn-outline-primary me-1"
-                  (click)="suaDot(dot)"
+                  data-bs-toggle="modal"
+                  data-bs-target="#suaDotTiemModal"
+                  (click)="batDauSua(dotTiem)"
                 >
                   ✏️
                 </button>
+
                 <button
                   class="btn btn-sm btn-outline-danger"
-                  (click)="xoaDot(dot)"
+                  (click)="xoaDotTiem(dotTiem.maDot)"
                 >
                   🗑️
+                </button>
+
+                <button
+                  class="btn btn-sm btn-outline-primary me-1"
+                  (click)="xemChiTiet(dotTiem.maDot)"
+                >
+                  👁️
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
+        <ng-template #khongCoData>
+          <p class="text-center text-muted">
+            Không có đợt tiêm nào được tìm thấy.
+          </p>
+        </ng-template>
       </div>
     </div>
-
-    <!-- Footer (Phân trang) -->
-    <div class="card-footer d-flex justify-content-between align-items-center">
-      <div>
-        Hiển thị {{ getPaginatedDotTiem().length }} /
-        {{ filteredDotTiem.length }} đợt tiêm
+    <pagination-controls (pageChange)="page = $event"></pagination-controls>
+  </div>
+</div>
+<div
+  class="modal fade"
+  id="themDotTiemModal"
+  tabindex="-1"
+  aria-labelledby="themDotTiemLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="themDotTiemLabel">Thêm đợt tiêm</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Đóng"
+        ></button>
       </div>
-      <nav>
-        <ul class="pagination pagination-sm mb-0">
-          <li class="page-item" [ngClass]="{ disabled: currentPage === 1 }">
-            <a class="page-link" (click)="changePage(currentPage - 1)">Trước</a>
-          </li>
-          <li
-            class="page-item"
-            *ngFor="let page of getPageNumbers()"
-            [ngClass]="{ active: currentPage === page }"
-          >
-            <a class="page-link" (click)="changePage(page)">{{ page }}</a>
-          </li>
-          <li
-            class="page-item"
-            [ngClass]="{ disabled: currentPage === totalPages }"
-          >
-            <a class="page-link" (click)="changePage(currentPage + 1)">Sau</a>
-          </li>
-        </ul>
-      </nav>
+      <div class="modal-body">
+        <!-- Nội dung form thêm đợt tiêm ở đây -->
+        <form>
+          <div class="mb-3">
+            <label for="ngayBatDau" class="form-label">Ngày bắt đầu</label>
+            <input
+              type="date"
+              class="form-control"
+              id="ngayBatDau"
+              [(ngModel)]="newDotTiem.ngayBatDau"
+              name="ngayBatDau"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="ngayKetThuc" class="form-label">Ngày kết thúc</label>
+            <input
+              type="date"
+              class="form-control"
+              id="ngayKetThuc"
+              [(ngModel)]="newDotTiem.ngayKetThuc"
+              name="ngayKetThuc"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="diaDiem" class="form-label">Địa điểm</label>
+            <input
+              type="text"
+              class="form-control"
+              id="diaDiem"
+              [(ngModel)]="newDotTiem.diaDiem"
+              name="diaDiem"
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Hủy
+        </button>
+        <button type="button" class="btn btn-primary" (click)="themDotTiem()">
+          Lưu
+        </button>
+      </div>
     </div>
   </div>
 </div>
-
-<!-- Modal thêm/sửa đợt tiêm -->
-<div class="modal fade" id="modalDotTiem" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
+<!-- Modal xem chi tiết -->
+<div class="modal fade" id="chiTietModal" tabindex="-1">
+  <div class="modal-dialog">
     <div class="modal-content">
-      <form (ngSubmit)="luuDotTiem()">
-        <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title">{{ isEdit ? "Sửa" : "Thêm" }} đợt tiêm</h5>
-          <button
-            type="button"
-            class="btn-close btn-close-white"
-            (click)="closeModal()"
-          ></button>
-        </div>
-
-        <div class="modal-body">
-          <div class="row g-3">
-            <div class="col-12">
-              <label class="form-label">Tên đợt tiêm</label>
-              <input
-                type="number"
-                class="form-control"
-                [(ngModel)]="formDot.maDot"
-                name="maDot"
-                [disabled]="isEdit"
-                required
-              />
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Ngày bắt đầu</label>
-              <input
-                type="date"
-                class="form-control"
-                [(ngModel)]="formDot.ngayBatDau"
-                name="ngayBatDau"
-                required
-              />
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Ngày kết thúc</label>
-              <input
-                type="date"
-                class="form-control"
-                [(ngModel)]="formDot.ngayKetThuc"
-                name="ngayKetThuc"
-                required
-              />
-            </div>
-
-            <div class="col-12">
-              <label class="form-label">Khu vực</label>
-              <input
-                type="text"
-                class="form-control"
-                [(ngModel)]="formDot.diaDiem"
-                name="diaDiem"
-                required
-              />
-            </div>
-
-            <div class="col-12">
-              <label class="form-label">Trạng thái</label>
-              <select
-                class="form-select"
-                [(ngModel)]="formDot.trangThai"
-                name="trangThai"
-                required
-              >
-                <option value="Đang diễn ra">Đang diễn ra</option>
-                <option value="Sắp diễn ra">Sắp diễn ra</option>
-                <option value="Kết thúc">Kết thúc</option>
-              </select>
-            </div>
+      <div class="modal-header">
+        <h5 class="modal-title">Chi tiết đợt tiêm</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedDotTiem">
+        <p><strong>Mã đợt tiên:</strong> {{ selectedDotTiem.maDot }}</p>
+        <p><strong>Ngày bắt đầu:</strong> {{ selectedDotTiem.ngayBatDau }}</p>
+        <p><strong>Ngày kết thúc:</strong> {{ selectedDotTiem.ngayKetThuc }}</p>
+        <p><strong>Địa điểm:</strong> {{ selectedDotTiem.diaDiem }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal sửa đợt tiêm -->
+<div
+  class="modal fade"
+  id="suaDotTiemModal"
+  tabindex="-1"
+  aria-labelledby="suaDotTiemLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="editNgayBatDau" class="form-label">Ngày bắt đầu</label>
+            <input
+              type="date"
+              class="form-control"
+              id="editNgayBatDau"
+              [(ngModel)]="dottiemDangSua.ngayBatDau"
+              name="editNgayBatDau"
+            />
           </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-success">💾 Lưu</button>
-          <button
-            type="button"
-            class="btn btn-secondary"
-            (click)="closeModal()"
-          >
-            Hủy
-          </button>
-        </div>
-      </form>
+          <div class="mb-3">
+            <label for="editNgayKetThuc" class="form-label"
+              >Ngày kết thúc</label
+            >
+            <input
+              type="date"
+              class="form-control"
+              id="editNgayKetThuc"
+              [(ngModel)]="dottiemDangSua.ngayKetThuc"
+              name="editNgayKetThuc"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="editDiaDiem" class="form-label">Địa điểm</label>
+            <input
+              type="text"
+              class="form-control"
+              id="editDiaDiem"
+              [(ngModel)]="dottiemDangSua.diaDiem"
+              name="editDiaDiem"
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Hủy
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="luuChinhSua()"
+          data-bs-dismiss="modal"
+        >
+          Lưu thay đổi
+        </button>
+      </div>
     </div>
   </div>
 </div>

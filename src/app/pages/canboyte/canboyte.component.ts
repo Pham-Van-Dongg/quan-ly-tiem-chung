@@ -23,7 +23,6 @@ import { NgxPaginationModule } from 'ngx-pagination';
 export class CanboyteComponent {
   danhSachCanBo: CanBoYte[] = [];
   error: string = '';
-  //trangHienTai = 1;
   page: number = 1;
 
   constructor(private CanBoYteService: CanBoYteService) {}

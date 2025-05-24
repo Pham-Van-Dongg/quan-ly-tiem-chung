@@ -32,7 +32,7 @@ export interface DateObject {
 }
 
 export interface DotTiem {
-  maDot: number;
+  maDot: null;
   ngayBatDau: DateObject;
   ngayKetThuc: DateObject;
   diaDiem: string;
