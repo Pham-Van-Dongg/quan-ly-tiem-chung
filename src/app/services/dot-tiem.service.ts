@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { DotTiem } from '../model/model-chung.model';
 @Injectable({
   providedIn: 'root',
 })
@@ -10,19 +10,23 @@ export class DotTiemService {
 
   constructor(private http: HttpClient) {}
 
-  layTatCa(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+  getDanhSachDotTiem(): Observable<DotTiem[]> {
+    return this.http.get<DotTiem[]>(this.apiUrl);
   }
 
-  them(dot: any): Observable<any> {
-    return this.http.post(this.apiUrl, dot);
+  getDotTiemById(id: number): Observable<DotTiem> {
+    return this.http.get<DotTiem>(`${this.apiUrl}/${id}`);
   }
 
-  sua(dot: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${dot.maDot}`, dot);
+  createDotTiem(dotTiem: Partial<DotTiem>): Observable<DotTiem> {
+    return this.http.post<DotTiem>(this.apiUrl, dotTiem);
   }
 
-  xoa(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+  updateDotTiem(id: number, dotTiem: Partial<DotTiem>): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}`, dotTiem);
+  }
+
+  deleteDotTiem(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

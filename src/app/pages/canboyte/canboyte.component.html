@@ -8,8 +8,7 @@
       <button
         class="btn btn-light btn-sm"
         data-bs-toggle="modal"
-        data-bs-target="#modalCanBo"
-        (click)="moFormThem()"
+        data-bs-target="#themCanBoModal"
       >
         ➕ Thêm cán bộ
       </button>
@@ -22,47 +21,38 @@
         <input
           type="text"
           class="form-control"
+          [(ngModel)]="tuKhoaTimKiem"
           placeholder="Tìm kiếm theo họ tên hoặc số điện thoại..."
-          [(ngModel)]="searchTerm"
-          (ngModelChange)="filterCanBo()"
+          style="width: 350px"
         />
       </div>
 
+      <!-- Hiển thị lỗi -->
+      <div *ngIf="error" class="alert alert-danger">Lỗi: {{ error }}</div>
+
+      <!-- Bảng danh sách -->
       <div class="table-responsive flex-grow-1">
         <table class="table table-bordered table-hover align-middle">
           <thead class="table-light">
             <tr>
-              <th>#</th>
-              <th (click)="sort('hoTen')" style="cursor: pointer">
-                Họ tên
-                <span *ngIf="sortKey === 'hoTen'">
-                  {{ sortDirection === "asc" ? "↑" : "↓" }}
-                </span>
-              </th>
-              <th (click)="sort('soDienThoai')" style="cursor: pointer">
-                Số điện thoại
-                <span *ngIf="sortKey === 'soDienThoai'">
-                  {{ sortDirection === "asc" ? "↑" : "↓" }}
-                </span>
-              </th>
-              <th (click)="sort('chucVu')" style="cursor: pointer">
-                Chức vụ
-                <span *ngIf="sortKey === 'chucVu'">
-                  {{ sortDirection === "asc" ? "↑" : "↓" }}
-                </span>
-              </th>
-              <th (click)="sort('donViCongTac')" style="cursor: pointer">
-                Đơn vị công tác
-                <span *ngIf="sortKey === 'donViCongTac'">
-                  {{ sortDirection === "asc" ? "↑" : "↓" }}
-                </span>
-              </th>
-              <th>Hành động</th>
+              <th>STT</th>
+              <th>Họ tên</th>
+              <th>SĐT</th>
+              <th>Chức vụ</th>
+              <th>Đơn vị</th>
+              <th>Thao tác</th>
             </tr>
           </thead>
-          <tbody>
-            <tr *ngFor="let canBo of paginatedCanBo; let i = index">
-              <td>{{ i + 1 + (currentPage - 1) * pageSize }}</td>
+          <tbody *ngIf="danhSachCanBo.length > 0; else khongCoData">
+            <tr
+              *ngFor="
+                let canBo of danhSachCanBo
+                  | canBoFilter : tuKhoaTimKiem
+                  | paginate : { itemsPerPage: 9, currentPage: page };
+                let i = index
+              "
+            >
+              <td>{{ i + 1 }}</td>
               <td>{{ canBo.hoTen }}</td>
               <td>{{ canBo.soDienThoai }}</td>
               <td>{{ canBo.chucVu }}</td>
@@ -70,310 +60,213 @@
               <td>
                 <button
                   class="btn btn-sm btn-outline-primary me-1"
-                  (click)="suaCanBo(canBo.maCb)"
                   data-bs-toggle="modal"
-                  data-bs-target="#modalCanBo"
+                  data-bs-target="#suaCanBoModal"
+                  (click)="batDauSua(canBo)"
                 >
                   ✏️
                 </button>
+
                 <button
                   class="btn btn-sm btn-outline-danger"
-                  (click)="xoaCanBo(canBo)"
+                  (click)="xoaCanBo(canBo.maCb)"
                 >
                   🗑️
+                </button>
+
+                <button
+                  class="btn btn-sm btn-outline-primary me-1"
+                  (click)="xemChiTiet(canBo.maCb)"
+                >
+                  👁️
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
+        <ng-template #khongCoData>
+          <p class="text-center text-muted">
+            Không có cán bộ nào được tìm thấy.
+          </p>
+        </ng-template>
       </div>
-
-      <!-- Phân trang -->
-      <div
-        class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top"
-      >
-        <div>
-          Hiển thị {{ (currentPage - 1) * pageSize + 1 }} -
-          {{
-            currentPage * pageSize > filteredCanBo.length
-              ? filteredCanBo.length
-              : currentPage * pageSize
-          }}
-          / {{ filteredCanBo.length }} cán bộ
-        </div>
-        <nav>
-          <ul class="pagination">
-            <li class="page-item" [class.disabled]="currentPage === 1">
-              <button class="page-link" (click)="changePage(currentPage - 1)">
-                Previous
-              </button>
-            </li>
-            <li
-              class="page-item"
-              *ngFor="let page of getPages()"
-              [class.active]="page === currentPage"
+    </div>
+    <pagination-controls (pageChange)="page = $event"></pagination-controls>
+  </div>
+</div>
+<div
+  class="modal fade"
+  id="themCanBoModal"
+  tabindex="-1"
+  aria-labelledby="themCanBoLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="themCanBoLabel">Thêm cán bộ</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Đóng"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <!-- Nội dung form thêm cán bộ ở đây -->
+        <form>
+          <div class="mb-3">
+            <label for="tenCanBo" class="form-label">Tên cán bộ</label>
+            <input
+              type="text"
+              class="form-control"
+              id="tenCanBo"
+              [(ngModel)]="newCanBo.hoTen"
+              name="tenCanBo"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="soDienThoai" class="form-label">Số điện thoại</label>
+            <input
+              type="text"
+              class="form-control"
+              id="soDienThoai"
+              [(ngModel)]="newCanBo.soDienThoai"
+              name="soDienThoai"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="chucVu" class="form-label">Chức vụ</label>
+            <input
+              type="text"
+              class="form-control"
+              id="chucVu"
+              [(ngModel)]="newCanBo.chucVu"
+              name="chucVu"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="donVi" class="form-label">Đơn vị công tác</label>
+            <input
+              type="text"
+              class="form-control"
+              id="donVi"
+              [(ngModel)]="newCanBo.donViCongTac"
+              name="donVi"
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Hủy
+        </button>
+        <button type="button" class="btn btn-primary" (click)="themCanBo()">
+          Lưu
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal xem chi tiết -->
+<div class="modal fade" id="chiTietModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Chi tiết cán bộ</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedCanBo">
+        <p><strong>Tên:</strong> {{ selectedCanBo.hoTen }}</p>
+        <p><strong>Chức vụ:</strong> {{ selectedCanBo.chucVu }}</p>
+        <p><strong>Đơn vị:</strong> {{ selectedCanBo.donViCongTac }}</p>
+        <p><strong>SĐT:</strong> {{ selectedCanBo.soDienThoai }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal sửa cán bộ -->
+<div
+  class="modal fade"
+  id="suaCanBoModal"
+  tabindex="-1"
+  aria-labelledby="suaCanBoLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="suaCanBoLabel">Sửa cán bộ</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Đóng"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="editTenCanBo" class="form-label">Tên cán bộ</label>
+            <input
+              type="text"
+              class="form-control"
+              id="editTenCanBo"
+              [(ngModel)]="canBoDangSua.hoTen"
+              name="editTenCanBo"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="editSoDienThoai" class="form-label"
+              >Số điện thoại</label
             >
-              <button class="page-link" (click)="changePage(page)">
-                {{ page }}
-              </button>
-            </li>
-            <li class="page-item" [class.disabled]="currentPage === totalPages">
-              <button class="page-link" (click)="changePage(currentPage + 1)">
-                Next
-              </button>
-            </li>
-          </ul>
-        </nav>
+            <input
+              type="text"
+              class="form-control"
+              id="editSoDienThoai"
+              [(ngModel)]="canBoDangSua.soDienThoai"
+              name="editSoDienThoai"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="editChucVu" class="form-label">Chức vụ</label>
+            <input
+              type="text"
+              class="form-control"
+              id="editChucVu"
+              [(ngModel)]="canBoDangSua.chucVu"
+              name="editChucVu"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="editDonVi" class="form-label">Đơn vị công tác</label>
+            <input
+              type="text"
+              class="form-control"
+              id="editDonVi"
+              [(ngModel)]="canBoDangSua.donViCongTac"
+              name="editDonVi"
+            />
+          </div>
+        </form>
       </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal thêm/sửa cán bộ -->
-<div class="modal fade" id="modalCanBo" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-xl modal-dialog-centered">
-    <div class="modal-content">
-      <form (ngSubmit)="luuCanBo()">
-        <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title">
-            {{ isEditMode ? "Sửa" : "Thêm" }} cán bộ y tế
-          </h5>
-          <button
-            type="button"
-            class="btn-close btn-close-white"
-            data-bs-dismiss="modal"
-          ></button>
-        </div>
-
-        <div class="modal-body">
-          <div class="row g-3">
-            <div class="col-12">
-              <label class="form-label">Họ tên</label>
-              <input
-                type="text"
-                class="form-control"
-                [(ngModel)]="formCanBo.hoTen"
-                name="hoTen"
-                required
-              />
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Số điện thoại</label>
-              <input
-                type="text"
-                class="form-control"
-                [(ngModel)]="formCanBo.soDienThoai"
-                name="soDienThoai"
-                required
-                pattern="^[0-9]{10}$"
-              />
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Chức vụ</label>
-              <input
-                type="text"
-                class="form-control"
-                [(ngModel)]="formCanBo.chucVu"
-                name="chucVu"
-                required
-              />
-            </div>
-
-            <div class="col-12">
-              <label class="form-label">Đơn vị công tác</label>
-              <input
-                type="text"
-                class="form-control"
-                [(ngModel)]="formCanBo.donViCongTac"
-                name="donViCongTac"
-                required
-              />
-            </div>
-
-            <!-- Danh sách lịch tiêm -->
-            <div class="col-12 mt-4">
-              <div class="d-flex justify-content-between align-items-center">
-                <h6>Danh sách lịch tiêm</h6>
-                <button
-                  type="button"
-                  class="btn btn-sm btn-success"
-                  (click)="moFormThemLichTiem()"
-                >
-                  ➕ Thêm lịch tiêm
-                </button>
-              </div>
-              <div class="table-responsive mt-2">
-                <table class="table table-bordered table-hover">
-                  <thead class="table-light">
-                    <tr>
-                      <th>#</th>
-                      <th>Mã người dùng</th>
-                      <th>Mã vaccine</th>
-                      <th>Mã đợt tiêm</th>
-                      <th>Ngày tiêm</th>
-                      <th>Mũi thứ</th>
-                      <th>Trạng thái</th>
-                      <th>Hành động</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      *ngFor="
-                        let lichTiem of formCanBo.lichTiems;
-                        let i = index
-                      "
-                    >
-                      <td>{{ i + 1 }}</td>
-                      <td>{{ lichTiem.maNd }}</td>
-                      <td>{{ lichTiem.maVac }}</td>
-                      <td>{{ lichTiem.maDot }}</td>
-                      <td>{{ formatDateObject(lichTiem.ngayTiem) }}</td>
-                      <td>{{ lichTiem.muiThu }}</td>
-                      <td>{{ lichTiem.trangThai }}</td>
-                      <td>
-                        <button
-                          type="button"
-                          class="btn btn-sm btn-outline-primary me-1"
-                          (click)="suaLichTiem(lichTiem)"
-                        >
-                          ✏️
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-sm btn-outline-danger"
-                          (click)="xoaLichTiem(lichTiem)"
-                        >
-                          🗑️
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-success">💾 Lưu</button>
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-          >
-            Hủy
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- Modal thêm/sửa lịch tiêm -->
-<div class="modal fade" id="modalLichTiem" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
-      <form (ngSubmit)="luuLichTiem()">
-        <div class="modal-header bg-success text-white">
-          <h5 class="modal-title">
-            {{ isEditLichTiemMode ? "Sửa" : "Thêm" }} lịch tiêm
-          </h5>
-          <button
-            type="button"
-            class="btn-close btn-close-white"
-            data-bs-dismiss="modal"
-          ></button>
-        </div>
-
-        <div class="modal-body">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">Mã người dùng</label>
-              <input
-                type="number"
-                class="form-control"
-                [(ngModel)]="formLichTiem.maNd"
-                name="maNd"
-                required
-              />
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Mã vaccine</label>
-              <input
-                type="number"
-                class="form-control"
-                [(ngModel)]="formLichTiem.maVac"
-                name="maVac"
-                required
-              />
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Mã đợt tiêm</label>
-              <input
-                type="number"
-                class="form-control"
-                [(ngModel)]="formLichTiem.maDot"
-                name="maDot"
-                required
-              />
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Ngày tiêm</label>
-              <input
-                type="date"
-                class="form-control"
-                [ngModel]="formatDateObject(formLichTiem.ngayTiem)"
-                (ngModelChange)="
-                  formLichTiem.ngayTiem = parseDateString($event)
-                "
-                name="ngayTiem"
-                required
-              />
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Mũi thứ</label>
-              <input
-                type="number"
-                class="form-control"
-                [(ngModel)]="formLichTiem.muiThu"
-                name="muiThu"
-                required
-              />
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Trạng thái</label>
-              <select
-                class="form-control"
-                [(ngModel)]="formLichTiem.trangThai"
-                name="trangThai"
-                required
-              >
-                <option value="Chưa tiêm">Chưa tiêm</option>
-                <option value="Đã tiêm">Đã tiêm</option>
-                <option value="Hủy">Hủy</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-success">💾 Lưu</button>
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-          >
-            Hủy
-          </button>
-        </div>
-      </form>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Hủy
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="luuChinhSua()"
+          data-bs-dismiss="modal"
+        >
+          Lưu thay đổi
+        </button>
+      </div>
     </div>
   </div>
 </div>

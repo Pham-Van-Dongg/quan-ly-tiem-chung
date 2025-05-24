@@ -4,13 +4,19 @@
     <div
       class="card-header bg-info text-white d-flex justify-content-between align-items-center"
     >
-      <h5 class="mb-0">📋 Quản lý đợt tiêm</h5>
-      <button
-        class="btn btn-light btn-sm"
-        data-bs-toggle="modal"
-        data-bs-target="#modalDotTiem"
-        (click)="moFormThem()"
-      >
+      <div>
+        <h5 class="mb-0">📋 Quản lý đợt tiêm</h5>
+        <div class="mt-2">
+          <input
+            type="text"
+            class="form-control form-control-sm"
+            placeholder="Tìm kiếm theo khu vực..."
+            [(ngModel)]="searchTerm"
+            (input)="onSearch()"
+          />
+        </div>
+      </div>
+      <button class="btn btn-light btn-sm" (click)="moFormThem()">
         ➕ Thêm đợt tiêm
       </button>
     </div>
@@ -23,30 +29,56 @@
             <tr>
               <th>#</th>
               <th>Tên đợt</th>
-              <th>Ngày bắt đầu</th>
-              <th>Ngày kết thúc</th>
+              <th class="sortable" (click)="sort('ngayBatDau')">
+                Ngày bắt đầu
+                <span
+                  *ngIf="sortField === 'ngayBatDau'"
+                  [ngClass]="
+                    sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'
+                  "
+                ></span>
+              </th>
+              <th class="sortable" (click)="sort('ngayKetThuc')">
+                Ngày kết thúc
+                <span
+                  *ngIf="sortField === 'ngayKetThuc'"
+                  [ngClass]="
+                    sortDirection === 'asc' ? 'arrow-up' : 'arrow-down'
+                  "
+                ></span>
+              </th>
               <th>Khu vực</th>
               <th>Trạng thái</th>
               <th>Hành động</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let dot of danhSachDotTiem; let i = index">
-              <td>{{ i + 1 }}</td>
-              <td>{{ dot.tenDot }}</td>
-              <td>{{ dot.ngayBatDau | date : "dd/MM/yyyy" }}</td>
-              <td>{{ dot.ngayKetThuc | date : "dd/MM/yyyy" }}</td>
-              <td>{{ dot.khuVuc }}</td>
+            <tr *ngFor="let dot of getPaginatedDotTiem(); let i = index">
+              <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+              <td>Đợt tiêm {{ dot.maDot }}</td>
+              <td>
+                {{ formatDateObject(dot.ngayBatDau) | date : "dd/MM/yyyy" }}
+              </td>
+              <td>
+                {{ formatDateObject(dot.ngayKetThuc) | date : "dd/MM/yyyy" }}
+              </td>
+              <td>{{ dot.diaDiem }}</td>
               <td>
                 <span
                   class="badge"
                   [ngClass]="{
-                    'bg-success': dot.trangThai === 'Đang diễn ra',
-                    'bg-secondary': dot.trangThai === 'Kết thúc',
-                    'bg-warning text-dark': dot.trangThai === 'Sắp diễn ra'
+                    'bg-success':
+                      tinhTrangThai(dot.ngayBatDau, dot.ngayKetThuc) ===
+                      'Đang diễn ra',
+                    'bg-secondary':
+                      tinhTrangThai(dot.ngayBatDau, dot.ngayKetThuc) ===
+                      'Kết thúc',
+                    'bg-warning text-dark':
+                      tinhTrangThai(dot.ngayBatDau, dot.ngayKetThuc) ===
+                      'Sắp diễn ra'
                   }"
                 >
-                  {{ dot.trangThai }}
+                  {{ tinhTrangThai(dot.ngayBatDau, dot.ngayKetThuc) }}
                 </span>
               </td>
               <td>
@@ -68,6 +100,34 @@
         </table>
       </div>
     </div>
+
+    <!-- Footer (Phân trang) -->
+    <div class="card-footer d-flex justify-content-between align-items-center">
+      <div>
+        Hiển thị {{ getPaginatedDotTiem().length }} /
+        {{ filteredDotTiem.length }} đợt tiêm
+      </div>
+      <nav>
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item" [ngClass]="{ disabled: currentPage === 1 }">
+            <a class="page-link" (click)="changePage(currentPage - 1)">Trước</a>
+          </li>
+          <li
+            class="page-item"
+            *ngFor="let page of getPageNumbers()"
+            [ngClass]="{ active: currentPage === page }"
+          >
+            <a class="page-link" (click)="changePage(page)">{{ page }}</a>
+          </li>
+          <li
+            class="page-item"
+            [ngClass]="{ disabled: currentPage === totalPages }"
+          >
+            <a class="page-link" (click)="changePage(currentPage + 1)">Sau</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
   </div>
 </div>
 
@@ -77,11 +137,11 @@
     <div class="modal-content">
       <form (ngSubmit)="luuDotTiem()">
         <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title">Thêm / Sửa đợt tiêm</h5>
+          <h5 class="modal-title">{{ isEdit ? "Sửa" : "Thêm" }} đợt tiêm</h5>
           <button
             type="button"
             class="btn-close btn-close-white"
-            data-bs-dismiss="modal"
+            (click)="closeModal()"
           ></button>
         </div>
 
@@ -90,10 +150,11 @@
             <div class="col-12">
               <label class="form-label">Tên đợt tiêm</label>
               <input
-                type="text"
+                type="number"
                 class="form-control"
-                [(ngModel)]="formDot.tenDot"
-                name="tenDot"
+                [(ngModel)]="formDot.maDot"
+                name="maDot"
+                [disabled]="isEdit"
                 required
               />
             </div>
@@ -125,8 +186,8 @@
               <input
                 type="text"
                 class="form-control"
-                [(ngModel)]="formDot.khuVuc"
-                name="khuVuc"
+                [(ngModel)]="formDot.diaDiem"
+                name="diaDiem"
                 required
               />
             </div>
@@ -152,7 +213,7 @@
           <button
             type="button"
             class="btn btn-secondary"
-            data-bs-dismiss="modal"
+            (click)="closeModal()"
           >
             Hủy
           </button>
