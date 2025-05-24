@@ -1,81 +1,115 @@
-import { NgFor } from '@angular/common';
-import { Component } from '@angular/core';
+declare var bootstrap: any;
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
+import { HttpClientModule } from '@angular/common/http';
+import { VacxinService } from '../../services/vacxin.service';
+import { Vaccine, DateObject } from '../../model/model-chung.model';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { VaccineFilterPipe } from './vaccine-filter.pipe';
 @Component({
   selector: 'app-loaivacxin',
-  imports: [FormsModule, NgFor],
+  imports: [
+    CommonModule,
+    FormsModule,
+    HttpClientModule,
+    NgxPaginationModule,
+    VaccineFilterPipe,
+  ],
   templateUrl: './loaivacxin.component.html',
   styleUrl: './loaivacxin.component.css',
 })
 export class LoaivacxinComponent {
-  danhSachVaccine = [
-    {
-      id: 1,
-      ten: 'Vắc xin 6 trong 1',
-      soMui: 3,
-      khoangCach: 30,
-      nhaSanXuat: 'Sanofi',
-      moTa: 'Ngừa 6 bệnh thường gặp cho trẻ sơ sinh.',
-    },
-    {
-      id: 2,
-      ten: 'Vắc xin viêm gan B',
-      soMui: 3,
-      khoangCach: 28,
-      nhaSanXuat: 'VNVC',
-      moTa: 'Ngừa viêm gan B.',
-    },
-  ];
+  danhSachVaccine: Vaccine[] = [];
+  error: string = '';
+  page: number = 1;
+  tuKhoaTimKiem: string = '';
+  constructor(private VacxinService: VacxinService) {}
 
-  formVaccine: any = {};
-  dangSua: boolean = false;
-
-  moFormThem() {
-    this.formVaccine = {
-      ten: '',
-      soMui: 1,
-      khoangCach: 0,
-      nhaSanXuat: '',
-      moTa: '',
-    };
-    this.dangSua = false;
+  ngOnInit(): void {
+    this.VacxinService.getDanhSachVaccine().subscribe({
+      next: (data) => (this.danhSachVaccine = data),
+      error: (err) => (this.error = err.message),
+    });
   }
+  newVaccine: Vaccine = {
+    maVac: 0,
+    tenVac: '',
+    hangSanXuat: '',
+    soMui: 0,
+    thoiGianGiuaMui: 0,
+    lichTiems: [],
+  };
+  themVaccine(): void {
+    this.VacxinService.addVacccine(this.newVaccine).subscribe({
+      next: (data) => {
+        this.danhSachVaccine.push(data);
+        this.newVaccine = {
+          maVac: 0,
+          tenVac: '',
+          hangSanXuat: '',
+          soMui: 0,
+          thoiGianGiuaMui: 0,
+          lichTiems: [],
+        };
+        // Đóng modal bằng Bootstrap JS
+        const modalElement = document.getElementById('themVaccineModal');
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        modal.hide();
+        alert('Thêm thành công');
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Có lỗi xảy ra khi thêm vắc xin.');
+      },
+    });
+  }
+  selectedVaccine: Vaccine | null = null;
 
-  suaVaccine(vac: any) {
-    this.formVaccine = { ...vac };
-    this.dangSua = true;
-
-    const modal = new (window as any).bootstrap.Modal(
-      document.getElementById('modalVaccine')
+  xemChiTiet(maVac: number): void {
+    this.VacxinService.getVaccineById(maVac).subscribe({
+      next: (data) => {
+        this.selectedVaccine = data;
+        const modal = new bootstrap.Modal(
+          document.getElementById('chiTietModal')
+        );
+        modal.show();
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Không thể tải chi tiết Vắc xin');
+      },
+    });
+  }
+  vaccineDangSua: any = {};
+  batDauSua(vaccine: any) {
+    this.vaccineDangSua = { ...vaccine };
+  }
+  luuChinhSua() {
+    this.capNhatVaccine(this.vaccineDangSua);
+  }
+  capNhatVaccine(vaccineDaSua: any) {
+    const index = this.danhSachVaccine.findIndex(
+      (vc) => vc.maVac === vaccineDaSua.maVac
     );
-    modal.show();
-  }
-
-  luuVaccine() {
-    if (this.dangSua) {
-      const index = this.danhSachVaccine.findIndex(
-        (v) => v.id === this.formVaccine.id
-      );
-      if (index !== -1) {
-        this.danhSachVaccine[index] = { ...this.formVaccine };
-      }
-    } else {
-      const newId = Math.max(...this.danhSachVaccine.map((v) => v.id), 0) + 1;
-      this.danhSachVaccine.push({ ...this.formVaccine, id: newId });
+    if (index !== -1) {
+      this.danhSachVaccine[index] = { ...vaccineDaSua };
     }
-
-    const modal = (window as any).bootstrap.Modal.getInstance(
-      document.getElementById('modalVaccine')
-    );
-    modal.hide();
   }
-
-  xoaVaccine(vac: any) {
-    if (confirm('Bạn có chắc muốn xóa loại vắc xin này?')) {
-      this.danhSachVaccine = this.danhSachVaccine.filter(
-        (v) => v.id !== vac.id
-      );
+  xoaVaccine(maVac: number) {
+    if (confirm('Bạn có chắc chắn muốn xóa vắc xin này không?')) {
+      this.VacxinService.deleteVaccine(maVac).subscribe({
+        next: () => {
+          this.danhSachVaccine = this.danhSachVaccine.filter(
+            (vc) => vc.maVac !== maVac
+          );
+          alert('Xóa thành công');
+        },
+        error: (err) => {
+          console.error('Lỗi khi xóa:', err);
+          alert('Xóa thất bại');
+        },
+      });
     }
   }
 }
