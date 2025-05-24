@@ -28,6 +28,7 @@ export class CanBoYteService {
       })
     );
   }
+
   getCanBoById(maCb: number): Observable<CanBoYte> {
     return this.http.get<CanBoYte>(`${this.apiUrl}/${maCb}`).pipe(
       catchError((error) => {

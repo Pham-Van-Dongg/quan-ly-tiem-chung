@@ -4,143 +4,280 @@
     <div
       class="card-header bg-info text-white d-flex justify-content-between align-items-center"
     >
-      <h5 class="mb-0">💉 Quản lý loại vắc xin</h5>
+      <h5 class="mb-0">📋 Quản lý vắc xin</h5>
       <button
         class="btn btn-light btn-sm"
         data-bs-toggle="modal"
-        data-bs-target="#modalVaccine"
-        (click)="moFormThem()"
+        data-bs-target="#themVaccineModal"
       >
-        ➕ Thêm loại vắc xin
+        ➕ Thêm vắc xin
       </button>
     </div>
 
     <!-- Body -->
-    <div class="card-body">
-      <div class="table-responsive">
+    <div class="card-body d-flex flex-column" style="height: 100%">
+      <!-- Tìm kiếm -->
+      <div class="mb-3">
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="tuKhoaTimKiem"
+          placeholder="Tìm kiếm theo tên vắc xin"
+          style="width: 350px"
+        />
+      </div>
+
+      <!-- Hiển thị lỗi -->
+      <div *ngIf="error" class="alert alert-danger">Lỗi: {{ error }}</div>
+
+      <!-- Bảng danh sách -->
+      <div class="table-responsive flex-grow-1">
         <table class="table table-bordered table-hover align-middle">
           <thead class="table-light">
             <tr>
-              <th>#</th>
+              <th>STT</th>
+              <th>Mã vắc xin</th>
               <th>Tên vắc xin</th>
-              <th>Số mũi tiêm</th>
-              <th>Khoảng cách (ngày)</th>
-              <th>Đơn vị sản xuất</th>
-              <th>Mô tả</th>
-              <th>Hành động</th>
+              <th>Hãng sản xuất</th>
+              <th>Số mũi</th>
+              <th>Thời gian giữa mũi</th>
+              <th>Thao tác</th>
             </tr>
           </thead>
-          <tbody>
-            <tr *ngFor="let vac of danhSachVaccine; let i = index">
+          <tbody *ngIf="danhSachVaccine.length > 0; else khongCoData">
+            <tr
+              *ngFor="
+                let vaccine of danhSachVaccine
+                  | VaccineFilter : tuKhoaTimKiem
+                  | paginate : { itemsPerPage: 9, currentPage: page };
+                let i = index
+              "
+            >
               <td>{{ i + 1 }}</td>
-              <td>{{ vac.ten }}</td>
-              <td>{{ vac.soMui }}</td>
-              <td>{{ vac.khoangCach }}</td>
-              <td>{{ vac.nhaSanXuat }}</td>
-              <td>{{ vac.moTa }}</td>
+              <td>{{ vaccine.maVac }}</td>
+              <td>{{ vaccine.tenVac }}</td>
+              <td>{{ vaccine.hangSanXuat }}</td>
+              <td>{{ vaccine.soMui }}</td>
+              <td>{{ vaccine.thoiGianGiuaMui }} ngày</td>
               <td>
                 <button
                   class="btn btn-sm btn-outline-primary me-1"
-                  (click)="suaVaccine(vac)"
+                  data-bs-toggle="modal"
+                  data-bs-target="#suaVaccineModal"
+                  (click)="batDauSua(vaccine)"
                 >
                   ✏️
                 </button>
+
                 <button
                   class="btn btn-sm btn-outline-danger"
-                  (click)="xoaVaccine(vac)"
+                  (click)="xoaVaccine(vaccine.maVac)"
                 >
                   🗑️
+                </button>
+
+                <button
+                  class="btn btn-sm btn-outline-primary me-1"
+                  (click)="xemChiTiet(vaccine.maVac)"
+                >
+                  👁️
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
+        <ng-template #khongCoData>
+          <p class="text-center text-muted">
+            Không có vắc xin nào được tìm thấy.
+          </p>
+        </ng-template>
+      </div>
+    </div>
+    <pagination-controls (pageChange)="page = $event"></pagination-controls>
+  </div>
+</div>
+<div
+  class="modal fade"
+  id="themVaccineModal"
+  tabindex="-1"
+  aria-labelledby="themVaccineLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="themVaccineLabel">Thêm vắc xin</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Đóng"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <!-- Nội dung form thêm vắc xin ở đây -->
+        <form>
+          <div class="mb-3">
+            <label for="tenVaccine" class="form-label">Tên vắc xin</label>
+            <input
+              type="text"
+              class="form-control"
+              id="tenVaccine"
+              [(ngModel)]="newVaccine.tenVac"
+              name="tenVaccine"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="hangSanXuat" class="form-label">Hãng sản xuất</label>
+            <input
+              type="text"
+              class="form-control"
+              id="hangSanXuat"
+              [(ngModel)]="newVaccine.hangSanXuat"
+              name="hangSanXuat"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="soMui" class="form-label">Số mũi</label>
+            <input
+              type="text"
+              class="form-control"
+              id="soMui"
+              [(ngModel)]="newVaccine.soMui"
+              name="soMui"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="thoiGianGiuaMui" class="form-label"
+              >Thời gian giữa mũi</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="thoiGianGiuaMui"
+              [(ngModel)]="newVaccine.thoiGianGiuaMui"
+              name="thoiGianGiuaMui"
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Hủy
+        </button>
+        <button type="button" class="btn btn-primary" (click)="themVaccine()">
+          Lưu
+        </button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modal thêm/sửa -->
-<div class="modal fade" id="modalVaccine" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
+<!-- Modal xem chi tiết -->
+<div class="modal fade" id="chiTietModal" tabindex="-1">
+  <div class="modal-dialog">
     <div class="modal-content">
-      <form (ngSubmit)="luuVaccine()">
-        <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title">Thêm / Sửa loại vắc xin</h5>
-          <button
-            type="button"
-            class="btn-close btn-close-white"
-            data-bs-dismiss="modal"
-          ></button>
-        </div>
-
-        <div class="modal-body">
-          <div class="row g-3">
-            <div class="col-12">
-              <label class="form-label">Tên vắc xin</label>
-              <input
-                type="text"
-                class="form-control"
-                [(ngModel)]="formVaccine.ten"
-                name="ten"
-                required
-              />
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Số mũi tiêm</label>
-              <input
-                type="number"
-                class="form-control"
-                [(ngModel)]="formVaccine.soMui"
-                name="soMui"
-                required
-              />
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label">Khoảng cách giữa các mũi (ngày)</label>
-              <input
-                type="number"
-                class="form-control"
-                [(ngModel)]="formVaccine.khoangCach"
-                name="khoangCach"
-              />
-            </div>
-
-            <div class="col-12">
-              <label class="form-label">Đơn vị sản xuất</label>
-              <input
-                type="text"
-                class="form-control"
-                [(ngModel)]="formVaccine.nhaSanXuat"
-                name="nhaSanXuat"
-              />
-            </div>
-
-            <div class="col-12">
-              <label class="form-label">Mô tả</label>
-              <textarea
-                rows="2"
-                class="form-control"
-                [(ngModel)]="formVaccine.moTa"
-                name="moTa"
-              ></textarea>
-            </div>
+      <div class="modal-header">
+        <h5 class="modal-title">Chi tiết vắc xin</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedVaccine">
+        <p><strong>Mã vắc xin:</strong> {{ selectedVaccine.maVac }}</p>
+        <p><strong>Tên vắc xin:</strong> {{ selectedVaccine.tenVac }}</p>
+        <p><strong>Hãng sản xuất:</strong> {{ selectedVaccine.hangSanXuat }}</p>
+        <p><strong>Số mũi:</strong> {{ selectedVaccine.soMui }}</p>
+        <p>
+          <strong>Thời gian giữa mũi:</strong>
+          {{ selectedVaccine.thoiGianGiuaMui }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal sửa vắc xin -->
+<div
+  class="modal fade"
+  id="suaVaccineModal"
+  tabindex="-1"
+  aria-labelledby="suaVaccineLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="suaCanBoLabel">Sửa vắc xin</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Đóng"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="edittenVaccine" class="form-label">Tên vắc xin</label>
+            <input
+              type="text"
+              class="form-control"
+              id="edittenVaccine"
+              [(ngModel)]="vaccineDangSua.tenVac"
+              name="edittenVaccine"
+            />
           </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-success">💾 Lưu</button>
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-          >
-            Hủy
-          </button>
-        </div>
-      </form>
+          <div class="mb-3">
+            <label for="editHangSanXuat" class="form-label"
+              >Hãng sản xuất</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="editHangSanXuat"
+              [(ngModel)]="vaccineDangSua.hangSanXuat"
+              name="editHangSanXuat"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="editSoMui" class="form-label">Số mũi</label>
+            <input
+              type="text"
+              class="form-control"
+              id="editSoMui"
+              [(ngModel)]="vaccineDangSua.soMui"
+              name="editSoMui"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="editthoiGianGiuaMui" class="form-label"
+              >Thời gian giữa mũi</label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="editthoiGianGiuaMui"
+              [(ngModel)]="vaccineDangSua.thoiGianGiuaMui"
+              name="editthoiGianGiuaMui"
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Hủy
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="luuChinhSua()"
+          data-bs-dismiss="modal"
+        >
+          Lưu thay đổi
+        </button>
+      </div>
     </div>
   </div>
 </div>
