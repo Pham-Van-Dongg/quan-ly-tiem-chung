@@ -16,21 +16,6 @@ export const routes: Routes = [
       ),
     children: [
       {
-        path: '',
-        loadComponent: () =>
-          import('./pages/home/home.component').then((m) => m.HomeComponent),
-
-        pathMatch: 'full',
-      },
-      {
-        path: 'danhsachbe',
-        loadComponent: () =>
-          import('./pages/danhsachbe/danhsachbe.component').then(
-            (m) => m.DanhsachbeComponent
-          ),
-        providers: [provideHttpClient()],
-      },
-      {
         path: 'loaitiemchung',
         loadComponent: () =>
           import('./pages/loaitiemchung/loaitiemchung.component').then(
@@ -70,6 +55,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/canboyte/canboyte.component').then(
             (m) => m.CanboyteComponent
+          ),
+      },
+      {
+        path: 'nguoidan',
+        loadComponent: () =>
+          import('./pages/nguoidan/nguoidan.component').then(
+            (m) => m.NguoidanComponent
           ),
       },
     ],

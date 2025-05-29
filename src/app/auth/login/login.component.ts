@@ -5,9 +5,10 @@ import {
   Validators,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { AuthService } from '../../../auth.service';
+
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -17,22 +18,22 @@ import { Router } from '@angular/router';
   imports: [CommonModule, ReactiveFormsModule], // Nhập ReactiveFormsModule và CommonModule
 })
 export class LoginComponent {
-  loginForm!: FormGroup;
+  loginForm: FormGroup;
+  loginError: string | null = null;
+  isSubmitting: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router
-  ) {}
-
-  ngOnInit(): void {
+  ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3)]],
       password: [
         '',
         [
           Validators.required,
-          Validators.pattern('^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$'), // ít nhất 6 ký tự, chữ và số
+          Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d).{6,}$/),
         ],
       ],
     });
@@ -49,20 +50,26 @@ export class LoginComponent {
   onSubmit(): void {
     if (this.loginForm.invalid) return;
 
-    const { username, password } = this.loginForm.value;
+    this.isSubmitting = true;
+    this.loginError = null;
 
-    this.authService.login({ username, password }).subscribe({
+    const credentials = {
+      tenDangNhap: this.username?.value,
+      matKhau: this.password?.value,
+    };
+
+    this.authService.login(credentials).subscribe({
       next: (res) => {
-        localStorage.setItem('role', res.user.role);
-        localStorage.setItem('fullName', res.user.fullName);
-
-        // Chuyển hướng theo role
-        if (res.user.role === 'BaMe') this.router.navigate(['/parent']);
-        else if (res.user.role === 'YTe') this.router.navigate(['/nurse']);
-        else this.router.navigate(['/admin']);
+        this.authService.saveToLocalStorage(res);
+        this.router.navigate(['//lichtiem']); // Điều hướng sau khi đăng nhập thành công
+        this.isSubmitting = false;
       },
-      error: () => {
-        alert('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
+      error: (err) => {
+        console.error('Đăng nhập thất bại:', err);
+
+        // ✅ Gán lỗi từ API trả về
+        this.loginError = err.error || 'Đăng nhập thất bại. Vui lòng thử lại.';
+        this.isSubmitting = false;
       },
     });
   }

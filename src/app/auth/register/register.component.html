@@ -13,15 +13,12 @@
               id="reg-username"
               formControlName="username"
               [ngClass]="{
-                'is-invalid':
-                  username?.invalid && (username?.dirty || username?.touched)
+                'is-invalid': submitted && username?.invalid
               }"
             />
             <div
               class="invalid-feedback"
-              *ngIf="
-                username?.invalid && (username?.dirty || username?.touched)
-              "
+              *ngIf="submitted && username?.invalid"
             >
               <div *ngIf="username?.errors?.['required']">
                 Tên đăng nhập không được để trống.
@@ -41,15 +38,12 @@
               id="reg-password"
               formControlName="password"
               [ngClass]="{
-                'is-invalid':
-                  password?.invalid && (password?.dirty || password?.touched)
+                'is-invalid': submitted && password?.invalid
               }"
             />
             <div
               class="invalid-feedback"
-              *ngIf="
-                password?.invalid && (password?.dirty || password?.touched)
-              "
+              *ngIf="submitted && password?.invalid"
             >
               <div *ngIf="password?.errors?.['required']">
                 Mật khẩu không được để trống.
@@ -71,17 +65,12 @@
               id="confirm-password"
               formControlName="confirmPassword"
               [ngClass]="{
-                'is-invalid':
-                  confirmPassword?.invalid &&
-                  (confirmPassword?.dirty || confirmPassword?.touched)
+                'is-invalid': submitted && confirmPassword?.invalid
               }"
             />
             <div
               class="invalid-feedback"
-              *ngIf="
-                confirmPassword?.invalid &&
-                (confirmPassword?.dirty || confirmPassword?.touched)
-              "
+              *ngIf="submitted && confirmPassword?.invalid"
             >
               <div *ngIf="confirmPassword?.errors?.['required']">
                 Xác nhận mật khẩu không được để trống.
@@ -93,13 +82,7 @@
           </div>
 
           <!-- Submit Button -->
-          <button
-            type="submit"
-            class="btn btn-success w-100"
-            [disabled]="registerForm.invalid"
-          >
-            Đăng Ký
-          </button>
+          <button type="submit" class="btn btn-success w-100">Đăng Ký</button>
         </form>
 
         <p class="mt-3 text-center">

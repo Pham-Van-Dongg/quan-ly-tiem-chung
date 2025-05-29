@@ -1,0 +1,187 @@
+<div class="container">
+  <div class="card shadow-sm" style="height: 89vh">
+    <!-- Header -->
+    <div
+      class="card-header bg-info text-white d-flex justify-content-between align-items-center"
+    >
+      <h5 class="mb-0">📋 Quản lý lịch tiêm</h5>
+      <button
+        class="btn btn-light btn-sm"
+        data-bs-toggle="modal"
+        data-bs-target="#themLichTiemModal"
+      >
+        ➕ Thêm lịch tiêm
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="card-body d-flex flex-column" style="height: 100%">
+      <!-- Tìm kiếm -->
+      <div class="mb-3">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Tìm kiếm theo lịch tiêm"
+          style="width: 350px"
+        />
+      </div>
+
+      <!-- Hiển thị lỗi -->
+      <div *ngIf="error" class="alert alert-danger">Lỗi: {{ error }}</div>
+
+      <!-- Bảng danh sách -->
+      <div class="table-responsive flex-grow-1">
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>STT</th>
+              <th>Vắc xin</th>
+              <th>Mũi thứ</th>
+              <th>Ngày tiêm</th>
+              <th>Địa điểm</th>
+              <th>Cán bộ phụ trách</th>
+              <th>Trại thái</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="
+                let lichtiem of danhSachLichTiem
+                  | LichTiemFilter : tuKhoaTimKiem
+                  | paginate : { itemsPerPage: 9, currentPage: page };
+                let i = index
+              "
+            >
+              <td>{{ i + 1 }}</td>
+              <td>{{ lichtiem.maVacNavigation?.tenVac }}</td>
+              <td>{{ lichtiem.muiThu }}</td>
+              <td>
+                {{ lichtiem.ngayTiem.day }}/{{ lichtiem.ngayTiem.month }}/{{
+                  lichtiem.ngayTiem.year
+                }}
+              </td>
+              <td>{{ lichtiem.maDotNavigation?.diaDiem }}</td>
+              <td>{{ lichtiem.maCbNavigation?.hoTen }}</td>
+              <td>{{ lichtiem.trangThai }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <ng-template #khongCoData>
+          <p class="text-center text-muted">
+            Không có người dân nào được tìm thấy.
+          </p>
+        </ng-template>
+      </div>
+    </div>
+    <pagination-controls (pageChange)="page = $event"></pagination-controls>
+  </div>
+</div>
+<div
+  class="modal fade"
+  id="themLichTiemModal"
+  tabindex="-1"
+  aria-labelledby="themLichTiemLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="themLichTiemLabel">Thêm lịch tiêm</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Đóng"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <!-- Vaccine -->
+          <div class="mb-3">
+            <label class="form-label">Vắc xin</label>
+            <select
+              class="form-control"
+              [(ngModel)]="lichtiem.maVac"
+              name="maVac"
+            >
+              <option *ngFor="let vac of vaccines" [value]="vac.maVac">
+                {{ vac.tenVac }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Mũi thứ -->
+          <div class="mb-3">
+            <label class="form-label">Mũi thứ</label>
+            <input
+              type="number"
+              class="form-control"
+              [(ngModel)]="lichtiem.muiThu"
+              name="muiThu"
+            />
+          </div>
+
+          <!-- Ngày tiêm -->
+          <div class="mb-3">
+            <label class="form-label">Ngày tiêm</label>
+            <input
+              type="date"
+              class="form-control"
+              [(ngModel)]="lichtiem.ngayTiem"
+              name="ngayTiem"
+            />
+          </div>
+
+          <!-- Đợt tiêm -->
+          <div class="mb-3">
+            <label class="form-label">Đợt tiêm</label>
+            <select
+              class="form-control"
+              [(ngModel)]="lichtiem.maDot"
+              name="maDot"
+            >
+              <option *ngFor="let dot of dotTiems" [value]="dot.maDot">
+                {{ dot.diaDiem }} - {{ dot.ngayBatDau.year }}/{{
+                  dot.ngayBatDau.month
+                }}/{{ dot.ngayBatDau.day }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Cán bộ y tế -->
+          <div class="mb-3">
+            <label class="form-label">Cán bộ y tế</label>
+            <select
+              class="form-control"
+              [(ngModel)]="lichtiem.maCb"
+              name="maCb"
+            >
+              <option *ngFor="let cb of canBoYtes" [value]="cb.maCb">
+                {{ cb.hoTen }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Trạng thái -->
+          <div class="mb-3">
+            <label class="form-label">Trạng thái</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="lichtiem.trangThai"
+              name="trangThai"
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Hủy
+        </button>
+        <button type="button" class="btn btn-primary" (click)="luuLichTiem()">
+          Lưu
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

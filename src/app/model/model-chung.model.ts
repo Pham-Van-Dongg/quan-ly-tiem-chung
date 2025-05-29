@@ -55,8 +55,8 @@ export interface TaiKhoan {
   maTk: number;
   tenDangNhap: string;
   matKhau: string;
-  loaiTaiKhoan: string;
-  maNd: number;
+  loaiTaiKhoan: number;
+  maNd: number | null;
   maNdNavigation?: string;
 }
 
