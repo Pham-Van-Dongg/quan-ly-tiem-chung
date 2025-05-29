@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+
+import { catchError, Observable, throwError } from 'rxjs';
 import {
   LichTiem,
   Vaccine,
@@ -9,39 +10,46 @@ import {
 } from '../model/model-chung.model';
 @Injectable({ providedIn: 'root' })
 export class LichTiemService {
-  private apiUrl = 'http://localhost:7025/api/LichTiems';
+  private apiUrl = 'https://localhost:7025/api/LichTiems';
 
   constructor(private http: HttpClient) {}
 
-  getAllLichTiem(): Observable<LichTiem[]> {
-    return this.http.get<LichTiem[]>(`${this.apiUrl}/LichTiems`);
+  getDanhSachLichTiem(): Observable<LichTiem[]> {
+    return this.http.get<LichTiem[]>(this.apiUrl).pipe(
+      catchError((error) => {
+        console.error('Lỗi khi gọi API:', error);
+        return throwError(
+          () => new Error('Không thể tải danh sách lịch tiêm.')
+        );
+      })
+    );
+  }
+  addLichTiem(lichtiem: LichTiem): Observable<LichTiem> {
+    return this.http.post<LichTiem>(`${this.apiUrl}`, lichtiem).pipe(
+      catchError((err) => {
+        console.error('Lỗi khi thêm lịch tiêm:', err);
+        return throwError(() => new Error('Không thể thêm lcịh tiêm.'));
+      })
+    );
+  }
+  getLichTiemById(maLichTiem: number): Observable<LichTiem> {
+    return this.http.get<LichTiem>(`${this.apiUrl}/${maLichTiem}`).pipe(
+      catchError((error) => {
+        console.error('Lỗi khi gọi API chi tiết: ', error);
+        return throwError(() => new Error('Không thể tải chi tiết lịch tiêm.'));
+      })
+    );
   }
 
-  getLichTiemById(id: number): Observable<LichTiem> {
-    return this.http.get<LichTiem>(`${this.apiUrl}/LichTiems/${id}`);
+  updateLichTiem(maLichTiem: number, lichtiem: any): Observable<any> {
+    return this.http.put(
+      `https://localhost:7025/api/LichTiems/${maLichTiem}`,
+      lichtiem
+    );
   }
-
-  createLichTiem(lichTiem: Partial<LichTiem>): Observable<LichTiem> {
-    return this.http.post<LichTiem>(`${this.apiUrl}/LichTiems`, lichTiem);
-  }
-
-  updateLichTiem(id: number, lichTiem: Partial<LichTiem>): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/LichTiems/${id}`, lichTiem);
-  }
-
-  deleteLichTiem(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/LichTiems/${id}`);
-  }
-
-  getDanhSachVac(): Observable<Vaccine[]> {
-    return this.http.get<Vaccine[]>(`${this.apiUrl}/Vaccines`);
-  }
-
-  getDanhSachDotTiem(): Observable<DotTiem[]> {
-    return this.http.get<DotTiem[]>(`${this.apiUrl}/DotTiems`);
-  }
-
-  getDanhSachNguoiDung(): Observable<NguoiDung[]> {
-    return this.http.get<NguoiDung[]>(`${this.apiUrl}/NguoiDungs`); // Giả định endpoint
+  deleteLichTiem(maLichTiem: number): Observable<any> {
+    return this.http.delete(
+      `https://localhost:7025/api/LichTiems/${maLichTiem}`
+    );
   }
 }

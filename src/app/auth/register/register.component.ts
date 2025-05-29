@@ -1,14 +1,15 @@
-import { Component } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
   Validators,
   ReactiveFormsModule,
+  AbstractControl,
 } from '@angular/forms';
-import { AuthService } from '../../../auth.service';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-
+import { RegisterService } from '../../services/register.service';
+import { TaiKhoan } from '../../model/model-chung.model';
 @Component({
   selector: 'app-register',
   standalone: true,
@@ -16,13 +17,13 @@ import { Router } from '@angular/router';
   styleUrls: ['./register.component.css'],
   imports: [CommonModule, ReactiveFormsModule],
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
   registerForm!: FormGroup;
   errorMessage: string | null = null;
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService,
+    private authService: RegisterService,
     private router: Router
   ) {}
 
@@ -34,7 +35,7 @@ export class RegisterComponent {
           '',
           [
             Validators.required,
-            Validators.pattern('^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$'),
+            Validators.pattern('^(?=.*[A-Za-z])(?=.*\\d).{6,}$'),
           ],
         ],
         confirmPassword: ['', Validators.required],
@@ -43,7 +44,6 @@ export class RegisterComponent {
     );
   }
 
-  // Validator để kiểm tra password và confirmPassword khớp nhau
   passwordMatchValidator(form: FormGroup) {
     return form.get('password')?.value === form.get('confirmPassword')?.value
       ? null
@@ -61,20 +61,31 @@ export class RegisterComponent {
   get confirmPassword() {
     return this.registerForm.get('confirmPassword');
   }
-
+  submitted = false;
+  loaitk = 0;
   onSubmit(): void {
+    this.submitted = true;
+
     if (this.registerForm.invalid) {
       console.log('Form không hợp lệ:', this.registerForm.errors);
       return;
     }
 
-    const { username, password } = this.registerForm.value; // Loại bỏ confirmPassword
-    console.log('Dữ liệu gửi đi:', { username, password });
+    const { username, password } = this.registerForm.value;
 
-    this.authService.register({ username, password }).subscribe({
+    const data: TaiKhoan = {
+      maTk: 0,
+      tenDangNhap: username,
+      matKhau: password,
+      loaiTaiKhoan: this.loaitk,
+      maNd: null,
+    };
+
+    this.authService.register(data).subscribe({
       next: (res) => {
-        console.log('Phản hồi từ API:', res);
-        this.router.navigate(['/login']); // Chuyển về đăng nhập
+        localStorage.setItem('username', res.tenDangNhap || username);
+        alert('Đăng ký thành công!');
+        this.router.navigate(['/']);
       },
       error: (err) => {
         console.error('Lỗi từ API:', err);

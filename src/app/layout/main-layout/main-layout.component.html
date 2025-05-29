@@ -6,14 +6,24 @@
   >
     <h5 class="mb-0 fw-bold text-primary">Hệ thống quản lý tiêm chủng</h5>
     <div class="user-info d-flex align-items-center">
-      <img
-        src="path/to/avatar.png"
-        alt="Avatar"
-        class="rounded-circle me-2 border"
-        width="36"
-        height="36"
-      />
-      <span class="fw-medium">UserName</span>
+      <ng-container *ngIf="currentUser; else dangKyBlock">
+        <img
+          src="path/to/avatar.png"
+          alt="Avatar"
+          class="rounded-circle me-2 border"
+          width="36"
+          height="36"
+        />
+        <span class="fw-medium me-2">{{ currentUser.tenDangNhap }}</span>
+        <button class="btn btn-outline-danger btn-sm" (click)="dangXuat()">
+          Đăng xuất
+        </button>
+      </ng-container>
+
+      <!-- Nếu chưa đăng nhập -->
+      <ng-template #dangKyBlock>
+        <a class="btn btn-outline-primary btn-sm" href="/register"> Đăng ký </a>
+      </ng-template>
     </div>
   </div>
 
