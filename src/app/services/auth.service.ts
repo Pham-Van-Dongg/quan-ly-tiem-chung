@@ -19,15 +19,19 @@ export class AuthService {
   }
 
   saveToLocalStorage(data: TaiKhoan): void {
-    localStorage.setItem('user', JSON.stringify(data));
+    if (data && data.tenDangNhap) {
+      localStorage.setItem('currentUser', JSON.stringify(data)); // sửa key thành currentUser
+    } else {
+      console.warn('Không lưu được dữ liệu login vào localStorage:', data);
+    }
+  }
+
+  logout(): void {
+    localStorage.removeItem('currentUser'); // sửa key thành currentUser
   }
 
   getUserFromLocalStorage(): TaiKhoan | null {
     const data = localStorage.getItem('user');
     return data ? JSON.parse(data) : null;
-  }
-
-  logout(): void {
-    localStorage.removeItem('user');
   }
 }

@@ -60,10 +60,10 @@ export class LoginComponent {
 
     this.authService.login(credentials).subscribe({
       next: (res) => {
-        this.authService.saveToLocalStorage(res);
-        this.router.navigate(['//lichtiem']); // Điều hướng sau khi đăng nhập thành công
-        this.isSubmitting = false;
+        this.authService.saveToLocalStorage(res); // lưu người dùng
+        this.router.navigate(['/']); // về trang chủ
       },
+
       error: (err) => {
         console.error('Đăng nhập thất bại:', err);
 
