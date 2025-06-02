@@ -14,8 +14,10 @@ import { Router } from '@angular/router';
 })
 export class MainLayoutComponent implements OnInit {
   currentUser: TaiKhoan | null = null;
-
-  constructor(private authService: AuthService, private router: Router) {}
+  userData: any;
+  constructor(private authService: AuthService, private router: Router) {
+    this.userData = this.authService.getUserFromLocalStorage();
+  }
 
   ngOnInit() {
     const userString = localStorage.getItem('currentUser');

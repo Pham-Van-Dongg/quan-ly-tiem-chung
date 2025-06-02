@@ -20,7 +20,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
   templateUrl: './canboyte.component.html',
   styleUrl: './canboyte.component.css',
 })
-export class CanboyteComponent {
+export class CanboyteComponent implements OnInit {
   danhSachCanBo: CanBoYte[] = [];
   error: string = '';
   page: number = 1;

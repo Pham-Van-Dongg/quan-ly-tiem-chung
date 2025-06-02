@@ -1,0 +1,70 @@
+<div class="container">
+  <div class="card shadow-sm" style="height: 89vh">
+    <!-- Header -->
+    <div
+      class="card-header bg-info text-white d-flex justify-content-between align-items-center"
+    >
+      <h5 class="mb-0">📋 Quản lý tài khoản</h5>
+    </div>
+
+    <!-- Body -->
+    <div class="card-body d-flex flex-column" style="height: 100%">
+      <!-- Tìm kiếm -->
+      <div class="mb-3">
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="tuKhoaTimKiem"
+          placeholder="Tìm kiếm theo tên người dân"
+          style="width: 350px"
+        />
+      </div>
+
+      <!-- Hiển thị lỗi -->
+      <div *ngIf="error" class="alert alert-danger">Lỗi: {{ error }}</div>
+
+      <!-- Bảng danh sách -->
+      <div class="table-responsive flex-grow-1">
+        <table class="table table-bordered table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>STT</th>
+              <th>Mã người dân</th>
+              <th>Tên người dân</th>
+              <th>Ngày sinh</th>
+              <th>Giới tính</th>
+              <th>Căn cước công dân</th>
+              <th>Địa chỉ</th>
+              <th>Số điện thoại</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="danhSachTaiKhoan.length > 0; else khongCoData">
+            <tr
+              *ngFor="
+                let taikhoan of danhSachTaiKhoan
+                  | TaiKhoanFilter : tuKhoaTimKiem
+                  | paginate : { itemsPerPage: 9, currentPage: page };
+                let i = index
+              "
+            >
+              <td>{{ i + 1 }}</td>
+              <td>{{ taikhoan.maNdNavigation?.maNd }}</td>
+              <td>{{ taikhoan.maNdNavigation?.hoTen }}</td>
+              <td>{{ taikhoan.maNdNavigation?.ngaySinh }}</td>
+              <td>{{ taikhoan.maNdNavigation?.gioiTinh }}</td>
+              <td>{{ taikhoan.maNdNavigation?.cmndCccd }}</td>
+              <td>{{ taikhoan.maNdNavigation?.diaChi }}</td>
+              <td>{{ taikhoan.maNdNavigation?.soDienThoai }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <ng-template #khongCoData>
+          <p class="text-center text-muted">
+            Không có người dân nào được tìm thấy.
+          </p>
+        </ng-template>
+      </div>
+    </div>
+    <pagination-controls (pageChange)="page = $event"></pagination-controls>
+  </div>
+</div>

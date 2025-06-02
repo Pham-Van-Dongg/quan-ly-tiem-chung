@@ -60,14 +60,27 @@ export class LoginComponent {
 
     this.authService.login(credentials).subscribe({
       next: (res) => {
-        this.authService.saveToLocalStorage(res); // lưu người dùng
-        this.router.navigate(['/']); // về trang chủ
+        // ✅ Log dữ liệu nhận được từ server
+        console.log('Dữ liệu trả về từ server:', res);
+        console.log('Thông tin tài khoản:', {
+          maTk: res.maTk,
+          tenDangNhap: res.tenDangNhap,
+          loaiTaiKhoan: res.loaiTaiKhoan,
+        });
+
+        // Nếu có thông tin người dùng
+        if (res.maNdNavigation) {
+          console.log('Thông tin người dùng:', res.maNdNavigation);
+        } else {
+          console.warn('Không có dữ liệu người dùng (maNdNavigation null)');
+        }
+
+        this.authService.saveToLocalStorage(res); // lưu vào localStorage
+        this.router.navigate(['/']); // chuyển về trang chủ
       },
 
       error: (err) => {
         console.error('Đăng nhập thất bại:', err);
-
-        // ✅ Gán lỗi từ API trả về
         this.loginError = err.error || 'Đăng nhập thất bại. Vui lòng thử lại.';
         this.isSubmitting = false;
       },
