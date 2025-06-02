@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { TaiKhoan } from '../model/model-chung.model';
+import { TaiKhoan, NguoiDung } from '../model/model-chung.model';
 @Injectable({
   providedIn: 'root',
 })
@@ -17,12 +17,23 @@ export class AuthService {
   }): Observable<TaiKhoan> {
     return this.http.post<TaiKhoan>(this.apiUrl, credentials);
   }
-
+  
   saveToLocalStorage(data: TaiKhoan): void {
     if (data && data.tenDangNhap) {
-      localStorage.setItem('currentUser', JSON.stringify(data)); // sửa key thành currentUser
+      localStorage.setItem(
+        'currentUser',
+        JSON.stringify({
+          taiKhoan: {
+            maTk: data.maTk,
+            tenDangNhap: data.tenDangNhap,
+            loaiTaiKhoan: data.loaiTaiKhoan,
+            maNd: data.maNd,
+          },
+          nguoiDung: data.maNdNavigation || null, // ✅ lưu null nếu không có
+        })
+      );
     } else {
-      console.warn('Không lưu được dữ liệu login vào localStorage:', data);
+      console.warn('Không lưu được tài khoản:', data);
     }
   }
 
@@ -30,8 +41,16 @@ export class AuthService {
     localStorage.removeItem('currentUser'); // sửa key thành currentUser
   }
 
-  getUserFromLocalStorage(): TaiKhoan | null {
-    const data = localStorage.getItem('user');
+  getUserFromLocalStorage(): {
+    taiKhoan: {
+      maTk: number;
+      tenDangNhap: string;
+      loaiTaiKhoan: number;
+      maNd: number | null;
+    };
+    nguoiDung: NguoiDung;
+  } | null {
+    const data = localStorage.getItem('currentUser');
     return data ? JSON.parse(data) : null;
   }
 }

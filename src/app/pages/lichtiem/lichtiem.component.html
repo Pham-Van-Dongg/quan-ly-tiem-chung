@@ -23,6 +23,7 @@
           class="form-control"
           placeholder="Tìm kiếm theo lịch tiêm"
           style="width: 350px"
+          [(ngModel)]="tuKhoaTimKiem"
         />
       </div>
 
@@ -40,7 +41,7 @@
               <th>Ngày tiêm</th>
               <th>Địa điểm</th>
               <th>Cán bộ phụ trách</th>
-              <th>Trại thái</th>
+              <th>Trạng thái</th>
             </tr>
           </thead>
           <tbody>
@@ -53,15 +54,19 @@
               "
             >
               <td>{{ i + 1 }}</td>
-              <td>{{ lichtiem.maVacNavigation?.tenVac }}</td>
+              <td>
+                {{ lichtiem.maVacNavigation?.tenVac || "Không xác định" }}
+              </td>
               <td>{{ lichtiem.muiThu }}</td>
               <td>
-                {{ lichtiem.ngayTiem.day }}/{{ lichtiem.ngayTiem.month }}/{{
-                  lichtiem.ngayTiem.year
-                }}
+                {{ lichtiem.ngayTiem.day }}/{{
+                  lichtiem.ngayTiem.month.toString().padStart(2, "0")
+                }}/{{ lichtiem.ngayTiem.year }}
               </td>
-              <td>{{ lichtiem.maDotNavigation?.diaDiem }}</td>
-              <td>{{ lichtiem.maCbNavigation?.hoTen }}</td>
+              <td>
+                {{ lichtiem.maDotNavigation?.diaDiem || "Không xác định" }}
+              </td>
+              <td>{{ lichtiem.maCbNavigation?.hoTen || "Không xác định" }}</td>
               <td>{{ lichtiem.trangThai }}</td>
             </tr>
           </tbody>
@@ -76,6 +81,7 @@
     <pagination-controls (pageChange)="page = $event"></pagination-controls>
   </div>
 </div>
+
 <div
   class="modal fade"
   id="themLichTiemModal"
@@ -96,12 +102,26 @@
       </div>
       <div class="modal-body">
         <form>
+          <!-- Người dân -->
+          <div class="mb-3">
+            <label class="form-label">Người dân</label>
+            <select
+              class="form-control"
+              [(ngModel)]="newLichTiem.maNd"
+              name="maNd"
+            >
+              <option *ngFor="let nd of nguoiDans" [value]="nd.maNd">
+                {{ nd.hoTen }}
+              </option>
+            </select>
+          </div>
+
           <!-- Vaccine -->
           <div class="mb-3">
             <label class="form-label">Vắc xin</label>
             <select
               class="form-control"
-              [(ngModel)]="lichtiem.maVac"
+              [(ngModel)]="newLichTiem.maVac"
               name="maVac"
             >
               <option *ngFor="let vac of vaccines" [value]="vac.maVac">
@@ -116,7 +136,7 @@
             <input
               type="number"
               class="form-control"
-              [(ngModel)]="lichtiem.muiThu"
+              [(ngModel)]="newLichTiem.muiThu"
               name="muiThu"
             />
           </div>
@@ -127,7 +147,7 @@
             <input
               type="date"
               class="form-control"
-              [(ngModel)]="lichtiem.ngayTiem"
+              (change)="onNgayTiemChange($event)"
               name="ngayTiem"
             />
           </div>
@@ -137,13 +157,13 @@
             <label class="form-label">Đợt tiêm</label>
             <select
               class="form-control"
-              [(ngModel)]="lichtiem.maDot"
+              [(ngModel)]="newLichTiem.maDot"
               name="maDot"
             >
               <option *ngFor="let dot of dotTiems" [value]="dot.maDot">
-                {{ dot.diaDiem }} - {{ dot.ngayBatDau.year }}/{{
-                  dot.ngayBatDau.month
-                }}/{{ dot.ngayBatDau.day }}
+                {{ dot.diaDiem }} - {{ dot.ngayBatDau.day }}/{{
+                  dot.ngayBatDau.month.toString().padStart(2, "0")
+                }}/{{ dot.ngayBatDau.year }}
               </option>
             </select>
           </div>
@@ -153,7 +173,7 @@
             <label class="form-label">Cán bộ y tế</label>
             <select
               class="form-control"
-              [(ngModel)]="lichtiem.maCb"
+              [(ngModel)]="newLichTiem.maCb"
               name="maCb"
             >
               <option *ngFor="let cb of canBoYtes" [value]="cb.maCb">
@@ -168,7 +188,7 @@
             <input
               type="text"
               class="form-control"
-              [(ngModel)]="lichtiem.trangThai"
+              [(ngModel)]="newLichTiem.trangThai"
               name="trangThai"
             />
           </div>

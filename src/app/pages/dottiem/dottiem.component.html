@@ -55,8 +55,8 @@
             >
               <td>{{ i + 1 }}</td>
               <td>{{ dotTiem.maDot }}</td>
-              <td>{{ dotTiem.ngayBatDau }}</td>
-              <td>{{ dotTiem.ngayKetThuc }}</td>
+              <td>{{ dotTiem.ngayBatDau | date : "dd-MM-yyyy" }}</td>
+              <td>{{ dotTiem.ngayKetThuc | date : "dd-MM-yyyy" }}</td>
               <td>{{ dotTiem.diaDiem }}</td>
               <td>
                 <button

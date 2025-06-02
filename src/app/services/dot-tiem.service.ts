@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { map, Observable, throwError } from 'rxjs';
 import { DotTiem } from '../model/model-chung.model';
 import { catchError } from 'rxjs/operators';
 
@@ -13,7 +13,8 @@ export class DotTiemService {
   constructor(private http: HttpClient) {}
 
   getDanhSachDotTiem(): Observable<DotTiem[]> {
-    return this.http.get<DotTiem[]>(this.apiUrl).pipe(
+    return this.http.get<any>(this.apiUrl).pipe(
+      map((res) => res.$values || []),
       catchError((error) => {
         console.error('Lỗi khi gọi API:', error);
         return throwError(() => new Error('Không thể tải danh sách đợt tiêm.'));

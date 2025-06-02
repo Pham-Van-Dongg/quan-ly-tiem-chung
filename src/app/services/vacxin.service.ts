@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Vaccine } from '../model/model-chung.model';
-import { Observable, throwError } from 'rxjs';
+import { map, Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable({
@@ -12,13 +12,15 @@ export class VacxinService {
   constructor(private http: HttpClient) {}
 
   getDanhSachVaccine(): Observable<Vaccine[]> {
-    return this.http.get<Vaccine[]>(this.apiUrl).pipe(
+    return this.http.get<any>(this.apiUrl).pipe(
+      map((res) => res.$values || []),
       catchError((error) => {
         console.error('Lỗi khi gọi API:', error);
         return throwError(() => new Error('Không thể tải danh sách vắc xin.'));
       })
     );
   }
+
   addVacccine(vaccine: Vaccine): Observable<Vaccine> {
     return this.http.post<Vaccine>(`${this.apiUrl}`, vaccine).pipe(
       catchError((err) => {

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { CanBoYte } from '../model/model-chung.model';
-import { Observable, throwError } from 'rxjs';
+import { map, Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root',
@@ -13,13 +13,15 @@ export class CanBoYteService {
   constructor(private http: HttpClient) {}
 
   getDanhSachCanBo(): Observable<CanBoYte[]> {
-    return this.http.get<CanBoYte[]>(this.apiUrl).pipe(
+    return this.http.get<any>(this.apiUrl).pipe(
+      map((res) => res.$values || []),
       catchError((error) => {
         console.error('Lỗi khi gọi API:', error);
         return throwError(() => new Error('Không thể tải danh sách cán bộ.'));
       })
     );
   }
+
   addCanBo(canBo: CanBoYte): Observable<CanBoYte> {
     return this.http.post<CanBoYte>(`${this.apiUrl}`, canBo).pipe(
       catchError((err) => {

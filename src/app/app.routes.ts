@@ -6,6 +6,7 @@ import { HosoTiemchungComponent } from './pages/hoso-tiemchung/hoso-tiemchung.co
 
 import { provideHttpClient } from '@angular/common/http';
 import { CanboyteComponent } from './pages/canboyte/canboyte.component';
+import { TaikhoanComponent } from './pages/taikhoan/taikhoan.component';
 // Main layout (có sidebar)
 export const routes: Routes = [
   {
@@ -62,6 +63,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/nguoidan/nguoidan.component').then(
             (m) => m.NguoidanComponent
+          ),
+      },
+      {
+        path: 'taikhoan',
+        loadComponent: () =>
+          import('./pages/taikhoan/taikhoan.component').then(
+            (m) => m.TaikhoanComponent
           ),
       },
     ],

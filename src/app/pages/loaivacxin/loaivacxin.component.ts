@@ -44,6 +44,12 @@ export class LoaivacxinComponent {
     this.VacxinService.addVacccine(this.newVaccine).subscribe({
       next: (data) => {
         this.danhSachVaccine.push(data);
+
+        // 👉 Reset tìm kiếm và về lại trang 1 để hiển thị bản ghi mới
+        this.tuKhoaTimKiem = '';
+        this.page = 1;
+
+        // 👉 Reset form
         this.newVaccine = {
           maVac: 0,
           tenVac: '',
@@ -52,10 +58,12 @@ export class LoaivacxinComponent {
           thoiGianGiuaMui: 0,
           lichTiems: [],
         };
-        // Đóng modal bằng Bootstrap JS
+
+        // 👉 Đóng modal
         const modalElement = document.getElementById('themVaccineModal');
         const modal = bootstrap.Modal.getInstance(modalElement);
-        modal.hide();
+        modal?.hide();
+
         alert('Thêm thành công');
       },
       error: (err) => {
@@ -64,6 +72,7 @@ export class LoaivacxinComponent {
       },
     });
   }
+
   selectedVaccine: Vaccine | null = null;
 
   xemChiTiet(maVac: number): void {
@@ -89,13 +98,36 @@ export class LoaivacxinComponent {
     this.capNhatVaccine(this.vaccineDangSua);
   }
   capNhatVaccine(vaccineDaSua: any) {
-    const index = this.danhSachVaccine.findIndex(
-      (vc) => vc.maVac === vaccineDaSua.maVac
-    );
-    if (index !== -1) {
-      this.danhSachVaccine[index] = { ...vaccineDaSua };
-    }
+    this.VacxinService.updateVaccine(
+      vaccineDaSua.maVac,
+      vaccineDaSua
+    ).subscribe({
+      next: (updated) => {
+        // ✅ Gọi lại danh sách và cập nhật giao diện
+        this.VacxinService.getDanhSachVaccine().subscribe({
+          next: (danhSachMoi) => {
+            this.danhSachVaccine = danhSachMoi; // Cập nhật danh sách hiển thị
+          },
+          error: (err) => {
+            console.error('Lỗi khi lấy danh sách vaccine:', err);
+          },
+        });
+
+        // Đóng modal
+        const modalElement = document.getElementById('suaVaccineModal');
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        modal?.hide();
+
+        this.vaccineDangSua = {};
+        alert('Cập nhật thành công');
+      },
+      error: (err) => {
+        console.error('Lỗi khi cập nhật:', err);
+        alert('Cập nhật thất bại');
+      },
+    });
   }
+
   xoaVaccine(maVac: number) {
     if (confirm('Bạn có chắc chắn muốn xóa vắc xin này không?')) {
       this.VacxinService.deleteVaccine(maVac).subscribe({

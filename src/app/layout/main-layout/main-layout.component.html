@@ -8,13 +8,16 @@
     <div class="user-info d-flex align-items-center">
       <ng-container *ngIf="currentUser; else dangKyBlock">
         <img
-          src="path/to/avatar.png"
+          src="assets/images/OIP.jpg"
           alt="Avatar"
           class="rounded-circle me-2 border"
           width="36"
           height="36"
         />
-        <span class="fw-medium me-2">{{ currentUser.tenDangNhap }}</span>
+        <span class="fw-medium me-2">
+          {{ userData?.nguoiDung?.hoTen || userData?.taiKhoan?.tenDangNhap }}
+        </span>
+
         <button class="btn btn-outline-danger btn-sm" (click)="dangXuat()">
           Đăng xuất
         </button>

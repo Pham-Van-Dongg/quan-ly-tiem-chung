@@ -42,7 +42,7 @@ export interface DotTiem {
 export interface NguoiDung {
   maNd: number;
   hoTen: string;
-  ngaySinh: DateObject;
+  ngaySinh: string;
   gioiTinh: string;
   cmndCccd: string;
   diaChi: string;
@@ -57,7 +57,7 @@ export interface TaiKhoan {
   matKhau: string;
   loaiTaiKhoan: number;
   maNd: number | null;
-  maNdNavigation?: string;
+  maNdNavigation?: NguoiDung | null;
 }
 
 export interface Vaccine {

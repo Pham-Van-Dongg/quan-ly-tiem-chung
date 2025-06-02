@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, Observable, throwError } from 'rxjs';
+import { map, catchError, Observable, throwError } from 'rxjs';
 import { NguoiDung } from '../model/model-chung.model';
 import { error } from 'console';
 @Injectable({
@@ -11,15 +11,26 @@ export class NguoidanService {
   constructor(private http: HttpClient) {}
 
   getDanhSachNguoiDan(): Observable<NguoiDung[]> {
-    return this.http.get<NguoiDung[]>(this.apiUrl).pipe(
+    return this.http.get<any>(this.apiUrl).pipe(
+      // Lấy danh sách từ $values
+      // Nếu backend trả về JSON có thuộc tính $values
+      // thì chúng ta chỉ lấy phần đó
+      // Ngược lại, có thể cần xử lý fallback
+      // Dùng optional chaining để tránh lỗi null
+      // hoặc bạn có thể kiểm tra rõ ràng hơn nếu muốn
+      // tránh lỗi runtime nếu dữ liệu không khớp
       catchError((error) => {
         console.error('Lỗi khi gọi API:', error);
         return throwError(
           () => new Error('Không thể tải danh sách người dân.')
         );
-      })
+      }),
+      // Map dữ liệu về đúng kiểu NguoiDung[]
+      // và truy xuất vào $values
+      map((res) => res?.$values ?? [])
     );
   }
+
   getNguoiDanById(maNd: number): Observable<NguoiDung> {
     return this.http.get<NguoiDung>(`${this.apiUrl}/${maNd}`).pipe(
       catchError((error) => {
