@@ -10,7 +10,9 @@ export class DotTiemFilterPipe implements PipeTransform {
     tuKhoa = tuKhoa.toLowerCase().trim();
 
     return danhSach.filter(
-      (md) => md.maDot != null && md.maDot.toString().includes(tuKhoa)
+      (md) =>
+        md.diaDiem != null &&
+        md.diaDiem.toString().toLowerCase().includes(tuKhoa)
     );
   }
 }

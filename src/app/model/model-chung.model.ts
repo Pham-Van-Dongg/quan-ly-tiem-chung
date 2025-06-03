@@ -33,8 +33,8 @@ export interface DateObject {
 
 export interface DotTiem {
   maDot: null;
-  ngayBatDau: DateObject;
-  ngayKetThuc: DateObject;
+  ngayBatDau: string;
+  ngayKetThuc: string;
   diaDiem: string;
   lichTiems?: string[];
 }

@@ -72,6 +72,13 @@ export const routes: Routes = [
             (m) => m.TaikhoanComponent
           ),
       },
+      {
+        path: 'capnhatthongtin',
+        loadComponent: () =>
+          import('./pages/capnhatthongtin/capnhatthongtin.component').then(
+            (m) => m.CapnhatthongtinComponent
+          ),
+      },
     ],
   },
 

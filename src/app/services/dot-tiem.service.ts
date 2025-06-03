@@ -23,13 +23,22 @@ export class DotTiemService {
   }
 
   addDotTiem(dotTiem: DotTiem): Observable<DotTiem> {
-    return this.http.post<DotTiem>(`${this.apiUrl}`, dotTiem).pipe(
+    // Tạo bản sao để không ảnh hưởng biến gốc
+    const dotTiemPayload = { ...dotTiem };
+    if (dotTiemPayload.maDot == null) {
+      delete (dotTiemPayload as any).maDot;
+    }
+
+    console.log('📤 Payload gửi lên:', dotTiemPayload);
+
+    return this.http.post<DotTiem>(this.apiUrl, dotTiemPayload).pipe(
       catchError((err) => {
-        console.error('Lỗi khi thêm đợt tiêm:', err);
+        console.error('❌ Lỗi khi thêm đợt tiêm:', err);
         return throwError(() => new Error('Không thể thêm đợt tiêm'));
       })
     );
   }
+
   getDotTiemId(maDot: number): Observable<DotTiem> {
     return this.http.get<DotTiem>(`${this.apiUrl}/${maDot}`).pipe(
       catchError((error) => {

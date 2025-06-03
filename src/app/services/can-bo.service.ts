@@ -39,9 +39,20 @@ export class CanBoYteService {
       })
     );
   }
-  updateCanBo(maCb: number, canBo: any): Observable<any> {
-    return this.http.put(`https://localhost:7025/api/CanBoYtes/${maCb}`, canBo);
+  updateCanBo(maCb: number, canBo: CanBoYte): Observable<CanBoYte> {
+    // Đảm bảo luôn có trường lichTiems
+    if (!canBo.lichTiems) {
+      canBo.lichTiems = [];
+    }
+
+    return this.http.put<CanBoYte>(`${this.apiUrl}/${maCb}`, canBo).pipe(
+      catchError((error) => {
+        console.error('Lỗi khi cập nhật cán bộ:', error);
+        return throwError(() => new Error('Không thể cập nhật cán bộ.'));
+      })
+    );
   }
+
   deleteCanBo(maCb: number): Observable<any> {
     return this.http.delete(`https://localhost:7025/api/CanBoYtes/${maCb}`);
   }

@@ -35,8 +35,8 @@ export class DotTiemComponent {
   }
   newDotTiem: DotTiem = {
     maDot: null,
-    ngayBatDau: { day: 0, month: 0, year: 0 },
-    ngayKetThuc: { day: 0, month: 0, year: 0 },
+    ngayBatDau: '',
+    ngayKetThuc: '',
     diaDiem: '',
     lichTiems: [],
   };
@@ -46,8 +46,8 @@ export class DotTiemComponent {
         this.danhSachDotTiem.push(data);
         this.newDotTiem = {
           maDot: null,
-          ngayBatDau: { day: 0, month: 0, year: 0 },
-          ngayKetThuc: { day: 0, month: 0, year: 0 },
+          ngayBatDau: '',
+          ngayKetThuc: '',
           diaDiem: '',
           lichTiems: [],
         };
@@ -55,6 +55,9 @@ export class DotTiemComponent {
         const modalElement = document.getElementById('themDotTiemModal');
         const modal = bootstrap.Modal.getInstance(modalElement);
         modal.hide();
+
+        // Hiện thông báo thành công
+        alert('Thêm đợt tiêm thành công!');
       },
       error: (err) => {
         console.error(err);
@@ -62,6 +65,7 @@ export class DotTiemComponent {
       },
     });
   }
+
   selectedDotTiem: DotTiem | null = null;
 
   xemChiTiet(maDot: number): void {

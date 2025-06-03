@@ -30,13 +30,17 @@ export class LichTiemService {
     return this.http.get<any>(this.apiUrl).pipe(
       map((res) => res.$values || []), // lấy mảng từ $values
       map((lichTiems: any[]) =>
-        lichTiems.map((lt) => ({
-          ...lt,
-          ngayTiem:
-            typeof lt.ngayTiem === 'string'
-              ? this.toDateObject(lt.ngayTiem)
-              : lt.ngayTiem,
-        }))
+        lichTiems
+          // Chỉ lấy những lịch tiêm không có người dùng (maNd === null)
+          .filter((lt) => lt.maNd === null)
+          // Chuyển định dạng ngày
+          .map((lt) => ({
+            ...lt,
+            ngayTiem:
+              typeof lt.ngayTiem === 'string'
+                ? this.toDateObject(lt.ngayTiem)
+                : lt.ngayTiem,
+          }))
       ),
       catchError((error) => {
         console.error('Lỗi khi gọi API:', error);
@@ -53,16 +57,24 @@ export class LichTiemService {
       ...lichTiem,
       ngayTiem: this.toDateString(lichTiem.ngayTiem),
     };
-    return this.http.post<LichTiem>(this.apiUrl, payload).pipe(
-      map((lt) => ({
-        ...lt,
-        ngayTiem: this.toDateObject(lt.ngayTiem as any), // API trả về chuỗi
-      })),
-      catchError((err) => {
-        console.error('Lỗi khi thêm lịch tiêm:', err);
-        return throwError(() => new Error('Không thể thêm lịch tiêm.'));
-      })
-    );
+
+    return this.http
+      .post<LichTiem>(
+        'https://localhost:7025/api/LichTiems/postchostaff',
+        payload
+      )
+      .pipe(
+        map((lt) => ({
+          ...lt,
+          ngayTiem: this.toDateObject(lt.ngayTiem as any), // Chuyển chuỗi về dạng Date nếu cần
+        })),
+        catchError((err) => {
+          console.error('Lỗi khi thêm lịch tiêm (không người dùng):', err);
+          return throwError(
+            () => new Error('Không thể thêm lịch tiêm (không người dùng).')
+          );
+        })
+      );
   }
 
   getLichTiemById(maLichTiem: number): Observable<LichTiem> {
@@ -105,6 +117,40 @@ export class LichTiemService {
       catchError((err) => {
         console.error('Lỗi khi xóa lịch tiêm:', err);
         return throwError(() => new Error('Không thể xóa lịch tiêm.'));
+      })
+    );
+  }
+  dangKyLichTiemNguoiDung(lichTiem: LichTiem): Observable<LichTiem> {
+    // Lấy thông tin người dùng từ localStorage
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const maNd = currentUser?.taiKhoan?.maNd;
+
+    if (!maNd) {
+      return throwError(
+        () => new Error('Không tìm thấy người dùng trong localStorage.')
+      );
+    }
+
+    // Tạo payload từ dữ liệu của lichTiem
+    const payload = {
+      maCb: lichTiem.maCb, // Lấy từ lichTiem
+      maDot: lichTiem.maDot, // Lấy từ lichTiem
+      maNd: maNd, // Sử dụng mã người dùng từ localStorage
+      maVac: lichTiem.maVac, // Lấy từ lichTiem
+      muiThu: lichTiem.muiThu, // Lấy từ lichTiem
+      ngayTiem: this.toDateString(lichTiem.ngayTiem), // Chuyển DateObject thành chuỗi
+      trangThai: lichTiem.trangThai || 'Chưa tiêm', // Mặc định là 'Chưa tiêm' nếu không có trạng thái
+    };
+    console.log('Payload gửi lên:', payload);
+
+    return this.http.post<LichTiem>(this.apiUrl, payload).pipe(
+      map((lt) => ({
+        ...lt,
+        ngayTiem: this.toDateObject(lt.ngayTiem as any),
+      })),
+      catchError((err) => {
+        console.error('Lỗi khi đăng ký lịch tiêm người dùng:', err);
+        return throwError(() => new Error('Không thể đăng ký lịch tiêm.'));
       })
     );
   }

@@ -1,0 +1,95 @@
+<div class="container">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">📝 Cập nhật thông tin cá nhân</h5>
+    </div>
+    <form (ngSubmit)="capNhatThongTin()">
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="hoTen" class="form-label">Họ tên</label>
+            <input
+              type="text"
+              class="form-control"
+              id="hoTen"
+              [(ngModel)]="nguoiDan.hoTen"
+              name="hoTen"
+              placeholder="Nhập họ tên"
+              required
+            />
+          </div>
+
+          <div class="col-md-6">
+            <label for="ngaySinh" class="form-label">Ngày sinh</label>
+            <input
+              type="date"
+              class="form-control"
+              id="ngaySinh"
+              [(ngModel)]="nguoiDan.ngaySinh"
+              name="ngaySinh"
+              required
+            />
+          </div>
+
+          <div class="col-md-6">
+            <label for="gioiTinh" class="form-label">Giới tính</label>
+            <select
+              class="form-select"
+              id="gioiTinh"
+              [(ngModel)]="nguoiDan.gioiTinh"
+              name="gioiTinh"
+              required
+            >
+              <option value="" disabled>-- Chọn giới tính --</option>
+              <option value="Nam">Nam</option>
+              <option value="Nữ">Nữ</option>
+              <option value="Khác">Khác</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label for="cmndCccd" class="form-label">CMND/CCCD</label>
+            <input
+              type="text"
+              class="form-control"
+              id="cmndCccd"
+              [(ngModel)]="nguoiDan.cmndCccd"
+              name="cmndCccd"
+              placeholder="Nhập số CMND/CCCD"
+              required
+            />
+          </div>
+
+          <div class="col-md-6">
+            <label for="diaChi" class="form-label">Địa chỉ</label>
+            <input
+              type="text"
+              class="form-control"
+              id="diaChi"
+              [(ngModel)]="nguoiDan.diaChi"
+              name="diaChi"
+              placeholder="Nhập địa chỉ"
+              required
+            />
+          </div>
+
+          <div class="col-md-6">
+            <label for="soDienThoai" class="form-label">Số điện thoại</label>
+            <input
+              type="tel"
+              class="form-control"
+              id="soDienThoai"
+              [(ngModel)]="nguoiDan.soDienThoai"
+              name="soDienThoai"
+              placeholder="Nhập SĐT"
+              required
+            />
+          </div>
+        </div>
+      </div>
+      <div class="card-footer text-end">
+        <button type="submit" class="btn btn-success">💾 Cập nhật</button>
+      </div>
+    </form>
+  </div>
+</div>
