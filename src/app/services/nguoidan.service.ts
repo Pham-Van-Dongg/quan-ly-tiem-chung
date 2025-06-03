@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { map, catchError, Observable, throwError } from 'rxjs';
 import { NguoiDung } from '../model/model-chung.model';
 import { error } from 'console';
@@ -39,13 +39,23 @@ export class NguoidanService {
       })
     );
   }
-  updateNguoiDan(maNd: number, nguoidan: any): Observable<any> {
-    return this.http.put(
-      `https://localhost:7025/api/NguoiDans/${maNd}`,
-      nguoidan
-    );
+
+  updateNguoiDan(id: number, data: NguoiDung): Observable<NguoiDung> {
+    return this.http
+      .put<NguoiDung>(`${this.apiUrl}/${id}`, data)
+      .pipe(catchError(this.handleError));
   }
   deleteNguoiDan(maNd: number): Observable<any> {
     return this.http.delete(`https://localhost:7025/api/NguoiDans/${maNd}`);
+  }
+  private handleError(error: HttpErrorResponse) {
+    let errorMessage = 'Đã xảy ra lỗi không xác định.';
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = `Lỗi: ${error.error.message}`;
+    } else {
+      errorMessage = error.error?.message || `Lỗi server (${error.status})`;
+    }
+    console.error('Lỗi:', error);
+    return throwError(() => new Error(errorMessage));
   }
 }

@@ -96,14 +96,30 @@ export class CanboyteComponent implements OnInit {
     this.capNhatCanBo(this.canBoDangSua);
   }
 
-  capNhatCanBo(canBoDaSua: any) {
-    const index = this.danhSachCanBo.findIndex(
-      (cb) => cb.maCb === canBoDaSua.maCb
-    );
-    if (index !== -1) {
-      this.danhSachCanBo[index] = { ...canBoDaSua };
-    }
+  capNhatCanBo(canBoDaSua: CanBoYte) {
+    this.CanBoYteService.updateCanBo(canBoDaSua.maCb, canBoDaSua).subscribe({
+      next: (updated) => {
+        const index = this.danhSachCanBo.findIndex(
+          (cb) => cb.maCb === updated.maCb
+        );
+        if (index !== -1) {
+          this.danhSachCanBo[index] = updated;
+        }
+
+        // Đóng modal nếu có
+        const modalElement = document.getElementById('suaCanBoModal');
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        modal?.hide();
+
+        alert('Cập nhật thành công');
+      },
+      error: (err) => {
+        console.error('Lỗi khi cập nhật:', err);
+        alert('Cập nhật thất bại');
+      },
+    });
   }
+
   xoaCanBo(maCb: number) {
     if (confirm('Bạn có chắc chắn muốn xóa cán bộ này không?')) {
       this.CanBoYteService.deleteCanBo(maCb).subscribe({

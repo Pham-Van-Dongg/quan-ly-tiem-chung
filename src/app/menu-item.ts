@@ -13,4 +13,5 @@ export const MENU_ITEMS: MenuItem[] = [
   { label: 'Cán bộ y tế', icon: 'event_note', route: '/canboyte' },
   { label: 'Người dân', icon: 'home', route: '/nguoidan' },
   { label: 'Tài khoản', icon: 'home', route: '/taikhoan' },
+  { label: 'Cập nhật thông tin', icon: 'home', route: '/capnhatthongtin' },
 ];

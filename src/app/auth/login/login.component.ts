@@ -69,14 +69,14 @@ export class LoginComponent {
         });
 
         // Nếu có thông tin người dùng
-        if (res.maNdNavigation) {
+        if (res.maNd) {
           console.log('Thông tin người dùng:', res.maNdNavigation);
         } else {
           console.warn('Không có dữ liệu người dùng (maNdNavigation null)');
         }
 
         this.authService.saveToLocalStorage(res); // lưu vào localStorage
-        this.router.navigate(['/']); // chuyển về trang chủ
+        this.router.navigate(['/lichtiem']); // chuyển về trang chủ
       },
 
       error: (err) => {

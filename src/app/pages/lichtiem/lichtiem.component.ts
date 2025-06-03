@@ -9,6 +9,7 @@ import { VacxinService } from '../../services/vacxin.service';
 import { DotTiemService } from '../../services/dot-tiem.service';
 import { CanBoYteService } from '../../services/can-bo.service';
 import { NguoidanService } from '../../services/nguoidan.service';
+
 import {
   LichTiem,
   Vaccine,
@@ -18,6 +19,7 @@ import {
   DateObject,
 } from '../../model/model-chung.model';
 import { forkJoin } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-lichtiem',
@@ -33,6 +35,7 @@ import { forkJoin } from 'rxjs';
   styleUrls: ['./lichtiem.component.css'],
 })
 export class LichTiemComponent implements OnInit {
+  currentMaNd: number = 0;
   nguoiDans: NguoiDung[] = [];
   vaccines: Vaccine[] = [];
   dotTiems: DotTiem[] = [];
@@ -61,10 +64,18 @@ export class LichTiemComponent implements OnInit {
     private lichTiemService: LichTiemService,
     private vacxinService: VacxinService,
     private dotTiemService: DotTiemService,
-    private canBoYteService: CanBoYteService
+    private canBoYteService: CanBoYteService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
+    const currentUser = this.authService.getUserFromLocalStorage();
+    this.currentMaNd = currentUser?.taiKhoan?.maNd || 0;
+
+    if (!this.currentMaNd) {
+      alert('Không tìm thấy mã người dùng. Vui lòng đăng nhập lại.');
+      return;
+    }
     forkJoin({
       nguoiDans: this.nguoidanService.getDanhSachNguoiDan(),
       vaccines: this.vacxinService.getDanhSachVaccine(),
@@ -144,5 +155,34 @@ export class LichTiemComponent implements OnInit {
       month: date.getMonth() + 1,
       day: date.getDate(),
     };
+  }
+  dangKyLichTiem(lichtiem: LichTiem) {
+    this.newLichTiem.maNd = this.currentMaNd;
+    const lichTiemMoi: LichTiem = {
+      ...lichtiem,
+      maLichTiem: 0, // Đặt về 0 để tạo mới
+      maNd: this.currentMaNd, // Sử dụng mã người dùng hiện tại
+      trangThai: '', // Trạng thái mặc định
+    };
+
+    this.lichTiemService.dangKyLichTiemNguoiDung(lichTiemMoi).subscribe({
+      next: (ltMoi) => {
+        alert('✅ Đăng ký lịch tiêm thành công!');
+        this.danhSachLichTiem.push({
+          ...ltMoi,
+          maVacNavigation:
+            this.vaccines.find((v) => v.maVac === ltMoi.maVac) || null,
+          maDotNavigation:
+            this.dotTiems.find((d) => d.maDot === ltMoi.maDot) || null,
+          maCbNavigation:
+            this.canBoYtes.find((c) => c.maCb === ltMoi.maCb) || null,
+          maNdNavigation:
+            this.nguoiDans.find((n) => n.maNd === ltMoi.maNd) || null,
+        });
+      },
+      error: (err) => {
+        alert('❌ Lỗi khi đăng ký lịch tiêm: ' + err.message);
+      },
+    });
   }
 }

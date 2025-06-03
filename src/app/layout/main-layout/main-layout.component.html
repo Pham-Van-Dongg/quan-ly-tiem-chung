@@ -15,7 +15,9 @@
           height="36"
         />
         <span class="fw-medium me-2">
-          {{ userData?.nguoiDung?.hoTen || userData?.taiKhoan?.tenDangNhap }}
+          {{
+            currentUser?.nguoiDung?.hoTen || currentUser?.taiKhoan?.tenDangNhap
+          }}
         </span>
 
         <button class="btn btn-outline-danger btn-sm" (click)="dangXuat()">

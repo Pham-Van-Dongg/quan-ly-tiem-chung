@@ -42,6 +42,7 @@
               <th>Địa điểm</th>
               <th>Cán bộ phụ trách</th>
               <th>Trạng thái</th>
+              <th>Hành động</th>
             </tr>
           </thead>
           <tbody>
@@ -68,6 +69,14 @@
               </td>
               <td>{{ lichtiem.maCbNavigation?.hoTen || "Không xác định" }}</td>
               <td>{{ lichtiem.trangThai }}</td>
+              <td>
+                <button
+                  class="btn btn-success btn-sm"
+                  (click)="dangKyLichTiem(lichtiem)"
+                >
+                  Đăng ký
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -102,20 +111,6 @@
       </div>
       <div class="modal-body">
         <form>
-          <!-- Người dân -->
-          <div class="mb-3">
-            <label class="form-label">Người dân</label>
-            <select
-              class="form-control"
-              [(ngModel)]="newLichTiem.maNd"
-              name="maNd"
-            >
-              <option *ngFor="let nd of nguoiDans" [value]="nd.maNd">
-                {{ nd.hoTen }}
-              </option>
-            </select>
-          </div>
-
           <!-- Vaccine -->
           <div class="mb-3">
             <label class="form-label">Vắc xin</label>
@@ -161,9 +156,7 @@
               name="maDot"
             >
               <option *ngFor="let dot of dotTiems" [value]="dot.maDot">
-                {{ dot.diaDiem }} - {{ dot.ngayBatDau.day }}/{{
-                  dot.ngayBatDau.month.toString().padStart(2, "0")
-                }}/{{ dot.ngayBatDau.year }}
+                {{ dot.diaDiem }} - {{ dot.ngayBatDau | date : "dd/MM/yyyy" }}
               </option>
             </select>
           </div>
