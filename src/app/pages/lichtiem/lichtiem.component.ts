@@ -41,6 +41,7 @@ interface LichTiemExt extends LichTiem {
 })
 export class LichTiemComponent implements OnInit {
   currentMaNd: number = 0;
+  loaiTaiKhoan: number = 0;
   nguoiDans: NguoiDung[] = [];
   vaccines: Vaccine[] = [];
   dotTiems: DotTiem[] = [];
@@ -75,13 +76,17 @@ export class LichTiemComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const currentUser = this.authService.getUserFromLocalStorage();
-    this.currentMaNd = currentUser?.taiKhoan?.maNd || 0;
-
-    if (!this.currentMaNd) {
-      alert('Không tìm thấy mã người dùng. Vui lòng đăng nhập lại.');
-      return;
+    const userString = localStorage.getItem('currentUser'); // key phải đúng
+    if (userString) {
+      const user = JSON.parse(userString);
+      this.loaiTaiKhoan = Number(user?.taiKhoan?.loaiTaiKhoan); // đảm bảo là kiểu số
     }
+    // Ví dụ lấy từ localStorage
+    const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    this.loaiTaiKhoan = Number(user?.taiKhoan?.loaiTaiKhoan || 0);
+
+    console.log('Loại tài khoản:', this.loaiTaiKhoan, typeof this.loaiTaiKhoan);
+
     forkJoin({
       nguoiDans: this.nguoidanService.getDanhSachNguoiDan(),
       vaccines: this.vacxinService.getDanhSachVaccine(),
@@ -155,6 +160,86 @@ export class LichTiemComponent implements OnInit {
       },
     });
   }
+  chonLichTiemDeSua(lichtiem: LichTiemExt) {
+    let ngayTiemObj = lichtiem.ngayTiem;
+
+    // Nếu là chuỗi ngày, chuyển sang Date rồi lấy year, month, day
+    if (typeof ngayTiemObj === 'string') {
+      const date = new Date(ngayTiemObj);
+      ngayTiemObj = {
+        year: date.getFullYear(),
+        month: date.getMonth() + 1,
+        day: date.getDate(),
+      };
+    }
+
+    this.newLichTiem = {
+      ...lichtiem,
+      ngayTiem: ngayTiemObj,
+    };
+  }
+
+  capNhatLichTiem() {
+    console.log('Dữ liệu newLichTiem trước khi cập nhật:', this.newLichTiem);
+    this.lichTiemService
+      .updateLichTiem(this.newLichTiem.maLichTiem, this.newLichTiem)
+      .subscribe({
+        next: (updatedLichTiem) => {
+          alert('Cập nhật lịch tiêm thành công');
+
+          // Cập nhật lại đối tượng trong danh sách
+          const index = this.danhSachLichTiem.findIndex(
+            (lt) => lt.maLichTiem === updatedLichTiem.maLichTiem
+          );
+          if (index !== -1) {
+            this.danhSachLichTiem[index] = {
+              ...updatedLichTiem,
+              maVacNavigation:
+                this.vaccines.find((v) => v.maVac === updatedLichTiem.maVac) ||
+                null,
+              maDotNavigation:
+                this.dotTiems.find((d) => d.maDot === updatedLichTiem.maDot) ||
+                null,
+              maCbNavigation:
+                this.canBoYtes.find((c) => c.maCb === updatedLichTiem.maCb) ||
+                null,
+              maNdNavigation:
+                this.nguoiDans.find((n) => n.maNd === updatedLichTiem.maNd) ||
+                null,
+            };
+          }
+
+          // Reset form
+          this.newLichTiem = {
+            maLichTiem: 0,
+            maNd: 0,
+            maVac: 0,
+            maDot: 0,
+            maCb: 0,
+            ngayTiem: { year: 0, month: 0, day: 0 },
+            muiThu: 0,
+            trangThai: '',
+            maVacNavigation: null,
+            maDotNavigation: null,
+            maCbNavigation: null,
+            maNdNavigation: null,
+          };
+
+          // Đóng modal (giả sử modal cập nhật có id này)
+          const modalElement = document.getElementById('capNhatLichTiemModal');
+          if (modalElement) {
+            const modal = (window as any).bootstrap.Modal.getInstance(
+              modalElement
+            );
+            modal.hide();
+          }
+        },
+        error: (err) => {
+          alert('Lỗi khi cập nhật lịch tiêm: ' + err.message);
+        },
+      });
+  }
+
   onNgayTiemChange(event: Event) {
     const input = event.target as HTMLInputElement;
     const date = new Date(input.value);

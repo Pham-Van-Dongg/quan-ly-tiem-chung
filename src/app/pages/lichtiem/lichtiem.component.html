@@ -69,7 +69,8 @@
               </td>
               <td>{{ lichtiem.maCbNavigation?.hoTen || "Không xác định" }}</td>
               <td>{{ lichtiem.trangThai }}</td>
-              <td>
+              <!-- Nếu không phải tài khoản quản trị -->
+              <td *ngIf="loaiTaiKhoan !== 1">
                 <ng-container *ngIf="!lichtiem.trangThaiDangKy; else huyDangKy">
                   <button
                     class="btn btn-success btn-sm"
@@ -86,6 +87,20 @@
                     Hủy đăng ký
                   </button>
                 </ng-template>
+              </td>
+
+              <!-- Nếu là tài khoản quản trị (loaiTaiKhoan === 1) -->
+              <td *ngIf="loaiTaiKhoan === 1">
+                <button
+                  class="btn btn-warning btn-sm"
+                  (click)="chonLichTiemDeSua(lichtiem)"
+                  data-bs-toggle="modal"
+                  data-bs-target="#capNhatLichTiemModal"
+                >
+                  ✏️ Sửa
+                </button>
+
+                <button class="btn btn-danger btn-sm">🗑️ Xóa</button>
               </td>
             </tr>
           </tbody>
@@ -203,6 +218,115 @@
         </button>
         <button type="button" class="btn btn-primary" (click)="luuLichTiem()">
           Lưu
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div
+  class="modal fade"
+  id="capNhatLichTiemModal"
+  tabindex="-1"
+  aria-labelledby="capNhatLichTiemLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="capNhatLichTiemLabel">
+          Cập nhật lịch tiêm
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Đóng"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label class="form-label">Vắc xin</label>
+            <select
+              class="form-select"
+              [(ngModel)]="newLichTiem.maVac"
+              name="maVac"
+            >
+              <option *ngFor="let vac of vaccines" [value]="vac.maVac">
+                {{ vac.tenVac }}
+              </option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Đợt tiêm</label>
+            <select
+              class="form-select"
+              [(ngModel)]="newLichTiem.maDot"
+              name="maDot"
+            >
+              <option *ngFor="let dot of dotTiems" [value]="dot.maDot">
+                {{ dot.diaDiem }}
+              </option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Cán bộ y tế</label>
+            <select
+              class="form-select"
+              [(ngModel)]="newLichTiem.maCb"
+              name="maCb"
+            >
+              <option *ngFor="let cb of canBoYtes" [value]="cb.maCb">
+                {{ cb.hoTen }}
+              </option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Ngày tiêm</label>
+            <input
+              class="form-control"
+              type="date"
+              [(ngModel)]="newLichTiem.ngayTiem"
+              name="ngayTiem"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Mũi thứ</label>
+            <input
+              type="number"
+              class="form-control"
+              [(ngModel)]="newLichTiem.muiThu"
+              name="muiThu"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Trạng thái</label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="newLichTiem.trangThai"
+              name="trangThai"
+            />
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Hủy
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="capNhatLichTiem()"
+        >
+          Cập nhật
         </button>
       </div>
     </div>

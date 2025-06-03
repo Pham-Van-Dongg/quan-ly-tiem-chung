@@ -95,15 +95,21 @@ export class LichTiemService {
 
   updateLichTiem(maLichTiem: number, lichTiem: LichTiem): Observable<LichTiem> {
     const payload = {
-      ...lichTiem,
-      ngayTiem: this.toDateString(lichTiem.ngayTiem),
+      maLichTiem: lichTiem.maLichTiem,
+      maVac: lichTiem.maVac,
+      maDot: lichTiem.maDot,
+      maCb: lichTiem.maCb,
+      ngayTiem: lichTiem.ngayTiem, // Không gọi toDateString nữa
+      muiThu: lichTiem.muiThu,
+      trangThai: lichTiem.trangThai,
     };
+
     return this.http
       .put<LichTiem>(`${this.apiUrl}/${maLichTiem}`, payload)
       .pipe(
         map((lt) => ({
           ...lt,
-          ngayTiem: this.toDateObject(lt.ngayTiem as any),
+          ngayTiem: this.toDateObject(lt.ngayTiem as any), // vẫn cần parse lại khi nhận về
         })),
         catchError((err) => {
           console.error('Lỗi khi cập nhật lịch tiêm:', err);
