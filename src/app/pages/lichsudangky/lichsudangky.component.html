@@ -1,0 +1,96 @@
+<div class="container">
+  <div class="card shadow-sm" style="min-height: 89vh">
+    <!-- Header -->
+    <div
+      class="card-header bg-success text-white d-flex justify-content-between align-items-center"
+    >
+      <h5 class="mb-0">💉 Lịch Tiêm Của Tôi</h5>
+    </div>
+
+    <!-- Body -->
+    <div class="card-body d-flex flex-column">
+      <!-- Hiển thị lỗi -->
+      <div *ngIf="errorMessage" class="alert alert-danger mb-3">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Bảng danh sách -->
+      <div class="table-responsive flex-grow-1">
+        <!-- Tìm kiếm -->
+        <div class="mb-3">
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="tuKhoaTimKiem"
+            placeholder="Tìm kiếm theo địa điểm"
+            style="width: 350px"
+          />
+        </div>
+        <table
+          class="table table-bordered table-hover align-middle"
+          *ngIf="danhSachLichTiemCuaToi.length > 0; else noData"
+        >
+          <thead class="table-light">
+            <tr>
+              <th scope="col">STT</th>
+              <th scope="col">Mã Lịch</th>
+              <th scope="col">Mã Vắc-xin</th>
+              <th scope="col">Mũi Thứ</th>
+              <th scope="col">Ngày Tiêm</th>
+              <th scope="col">Trạng Thái</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="
+                let lt of danhSachLichTiemCuaToi
+                  | lichhsudangkyFilter : tuKhoaTimKiem
+                  | paginate : { itemsPerPage: 9, currentPage: page };
+                let i = index
+              "
+            >
+              <td>{{ i + 1 }}</td>
+              <td>{{ lt.maLichTiem }}</td>
+              <td>
+                {{ lt.maVacNavigation?.tenVac || "Không xác định" }}
+              </td>
+
+              <td>{{ lt.muiThu }}</td>
+              <td>
+                <span *ngIf="lt.ngayTiem">
+                  {{ lt.ngayTiem.day }}/{{ lt.ngayTiem.month }}/{{
+                    lt.ngayTiem.year
+                  }}
+                </span>
+                <span *ngIf="!lt.ngayTiem" class="text-muted"
+                  >Chưa xác định</span
+                >
+              </td>
+              <td *ngIf="lt.ngayTiem; else chuaXacDinh">
+                {{
+                  getTrangThai(
+                    lt.ngayTiem.year +
+                      "-" +
+                      lt.ngayTiem.month +
+                      "-" +
+                      lt.ngayTiem.day
+                  )
+                }}
+              </td>
+              <ng-template #chuaXacDinh>
+                <td class="text-muted">Chưa xác định</td>
+              </ng-template>
+            </tr>
+          </tbody>
+        </table>
+
+        <ng-template #noData>
+          <div class="alert alert-info text-center mt-3">
+            Không có lịch tiêm nào.
+          </div>
+        </ng-template>
+      </div>
+    </div>
+    <pagination-controls (pageChange)="page = $event"></pagination-controls>
+  </div>
+</div>

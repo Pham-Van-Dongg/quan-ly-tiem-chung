@@ -154,4 +154,68 @@ export class LichTiemService {
       })
     );
   }
+  huyDangKyLichTiem(lichTiem: LichTiem, maNd: number): Observable<void> {
+    console.log('maNd nhận từ component:', maNd);
+    if (!maNd || isNaN(maNd)) {
+      console.error('Mã người dùng không hợp lệ:', maNd);
+      return throwError(() => new Error('Mã người dùng không hợp lệ.'));
+    }
+
+    if (!lichTiem || !lichTiem.ngayTiem) {
+      console.error('lichTiem hoặc ngayTiem không hợp lệ:', lichTiem);
+      return throwError(() => new Error('Dữ liệu lịch tiêm không hợp lệ.'));
+    }
+
+    // Tạo payload chỉ với các trường cần thiết
+    const payload = {
+      maNd: maNd,
+      maVac: lichTiem.maVac,
+      maDot: lichTiem.maDot,
+      maCb: lichTiem.maCb,
+      ngayTiem: this.toDateString(lichTiem.ngayTiem),
+      muiThu: lichTiem.muiThu,
+    };
+
+    console.log('Payload gửi lên API hủy đăng ký:', payload);
+
+    return this.http.post<void>(`${this.apiUrl}/huydangky`, payload).pipe(
+      catchError((err) => {
+        console.error('Lỗi khi hủy đăng ký:', err);
+        return throwError(() => new Error('Không thể hủy đăng ký lịch tiêm.'));
+      })
+    );
+  }
+
+  getDanhSachLichTiemNguoiDung(): Observable<LichTiem[]> {
+    // Lấy mã người dùng từ localStorage
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const maNd = currentUser?.taiKhoan?.maNd;
+
+    if (!maNd) {
+      return throwError(
+        () => new Error('Không tìm thấy người dùng trong localStorage.')
+      );
+    }
+
+    return this.http.get<any>(this.apiUrl).pipe(
+      map((res) => res.$values || []), // Lấy danh sách từ $values
+      map((lichTiems: any[]) =>
+        lichTiems
+          .filter((lt) => lt.maNd === maNd) // Chỉ lấy lịch tiêm có đúng maNd
+          .map((lt) => ({
+            ...lt,
+            ngayTiem:
+              typeof lt.ngayTiem === 'string'
+                ? this.toDateObject(lt.ngayTiem)
+                : lt.ngayTiem,
+          }))
+      ),
+      catchError((err) => {
+        console.error('Lỗi khi tải danh sách lịch tiêm của người dùng:', err);
+        return throwError(
+          () => new Error('Không thể tải danh sách lịch tiêm của người dùng.')
+        );
+      })
+    );
+  }
 }

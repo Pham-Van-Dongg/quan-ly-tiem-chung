@@ -9,6 +9,9 @@ import { VacxinService } from '../../services/vacxin.service';
 import { DotTiemService } from '../../services/dot-tiem.service';
 import { CanBoYteService } from '../../services/can-bo.service';
 import { NguoidanService } from '../../services/nguoidan.service';
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { catchError } from 'rxjs/operators';
 
 import {
   LichTiem,
@@ -20,7 +23,9 @@ import {
 } from '../../model/model-chung.model';
 import { forkJoin } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
-
+interface LichTiemExt extends LichTiem {
+  trangThaiDangKy?: boolean;
+}
 @Component({
   selector: 'app-lichtiem',
   standalone: true,
@@ -40,7 +45,7 @@ export class LichTiemComponent implements OnInit {
   vaccines: Vaccine[] = [];
   dotTiems: DotTiem[] = [];
   canBoYtes: CanBoYte[] = [];
-  danhSachLichTiem: LichTiem[] = [];
+  danhSachLichTiem: LichTiemExt[] = [];
   error: string = '';
   page: number = 1;
   tuKhoaTimKiem: string = '';
@@ -65,7 +70,8 @@ export class LichTiemComponent implements OnInit {
     private vacxinService: VacxinService,
     private dotTiemService: DotTiemService,
     private canBoYteService: CanBoYteService,
-    private authService: AuthService
+    private authService: AuthService,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -90,6 +96,7 @@ export class LichTiemComponent implements OnInit {
         this.canBoYtes = canBoYtes;
         this.danhSachLichTiem = lichTiems.map((lt: LichTiem) => ({
           ...lt,
+          trangThaiDangKy: lt.maNd === this.currentMaNd,
           maVacNavigation: vaccines.find((v) => v.maVac === lt.maVac) || null,
           maDotNavigation: dotTiems.find((d) => d.maDot === lt.maDot) || null,
           maCbNavigation: canBoYtes.find((c) => c.maCb === lt.maCb) || null,
@@ -101,6 +108,7 @@ export class LichTiemComponent implements OnInit {
       },
     });
   }
+  currentUserId: number = Number(localStorage.getItem('userId'));
 
   luuLichTiem() {
     this.lichTiemService.addLichTiem(this.newLichTiem).subscribe({
@@ -156,33 +164,63 @@ export class LichTiemComponent implements OnInit {
       day: date.getDate(),
     };
   }
-  dangKyLichTiem(lichtiem: LichTiem) {
-    this.newLichTiem.maNd = this.currentMaNd;
+  dangKyLichTiem(lichtiem: LichTiemExt) {
     const lichTiemMoi: LichTiem = {
       ...lichtiem,
       maLichTiem: 0, // Đặt về 0 để tạo mới
-      maNd: this.currentMaNd, // Sử dụng mã người dùng hiện tại
-      trangThai: '', // Trạng thái mặc định
+      maNd: this.currentMaNd, // Gán mã người dùng hiện tại
+      trangThai: '', // Trạng thái mặc định (đã tiêm/chưa tiêm)
     };
 
     this.lichTiemService.dangKyLichTiemNguoiDung(lichTiemMoi).subscribe({
       next: (ltMoi) => {
         alert('✅ Đăng ký lịch tiêm thành công!');
-        this.danhSachLichTiem.push({
-          ...ltMoi,
-          maVacNavigation:
-            this.vaccines.find((v) => v.maVac === ltMoi.maVac) || null,
-          maDotNavigation:
-            this.dotTiems.find((d) => d.maDot === ltMoi.maDot) || null,
-          maCbNavigation:
-            this.canBoYtes.find((c) => c.maCb === ltMoi.maCb) || null,
-          maNdNavigation:
-            this.nguoiDans.find((n) => n.maNd === ltMoi.maNd) || null,
-        });
+        // Cập nhật lịch tiêm hiện có thay vì thêm mới
+        this.danhSachLichTiem = this.danhSachLichTiem.map((lt) =>
+          lt.maLichTiem === lichtiem.maLichTiem
+            ? {
+                ...ltMoi,
+                trangThaiDangKy: true, // Cập nhật trạng thái đăng ký
+                maNd: this.currentMaNd,
+                maVacNavigation:
+                  this.vaccines.find((v) => v.maVac === ltMoi.maVac) || null,
+                maDotNavigation:
+                  this.dotTiems.find((d) => d.maDot === ltMoi.maDot) || null,
+                maCbNavigation:
+                  this.canBoYtes.find((c) => c.maCb === ltMoi.maCb) || null,
+                maNdNavigation:
+                  this.nguoiDans.find((n) => n.maNd === ltMoi.maNd) || null,
+              }
+            : lt
+        );
       },
       error: (err) => {
         alert('❌ Lỗi khi đăng ký lịch tiêm: ' + err.message);
       },
     });
+  }
+
+  huyDangKyLichTiem(lichTiem: LichTiemExt) {
+    console.log('Gọi hủy đăng ký lịch tiêm:', lichTiem);
+    this.lichTiemService
+      .huyDangKyLichTiem(lichTiem, this.currentMaNd)
+      .subscribe({
+        next: () => {
+          alert('✅ Hủy đăng ký lịch tiêm thành công!');
+          this.danhSachLichTiem = this.danhSachLichTiem.map((lt) =>
+            lt.maLichTiem === lichTiem.maLichTiem
+              ? {
+                  ...lt,
+                  trangThaiDangKy: false,
+                  maNd: 0,
+                  maNdNavigation: null,
+                }
+              : lt
+          );
+        },
+        error: (err) => {
+          alert('❌ Lỗi khi hủy đăng ký lịch tiêm: ' + err.message);
+        },
+      });
   }
 }

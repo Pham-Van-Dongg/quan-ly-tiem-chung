@@ -70,12 +70,22 @@
               <td>{{ lichtiem.maCbNavigation?.hoTen || "Không xác định" }}</td>
               <td>{{ lichtiem.trangThai }}</td>
               <td>
-                <button
-                  class="btn btn-success btn-sm"
-                  (click)="dangKyLichTiem(lichtiem)"
-                >
-                  Đăng ký
-                </button>
+                <ng-container *ngIf="!lichtiem.trangThaiDangKy; else huyDangKy">
+                  <button
+                    class="btn btn-success btn-sm"
+                    (click)="dangKyLichTiem(lichtiem)"
+                  >
+                    Đăng ký
+                  </button>
+                </ng-container>
+                <ng-template #huyDangKy>
+                  <button
+                    class="btn btn-danger btn-sm"
+                    (click)="huyDangKyLichTiem(lichtiem)"
+                  >
+                    Hủy đăng ký
+                  </button>
+                </ng-template>
               </td>
             </tr>
           </tbody>

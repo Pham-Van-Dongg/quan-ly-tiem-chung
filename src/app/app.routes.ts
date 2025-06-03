@@ -79,6 +79,13 @@ export const routes: Routes = [
             (m) => m.CapnhatthongtinComponent
           ),
       },
+      {
+        path: 'lichsudangky',
+        loadComponent: () =>
+          import('./pages/lichsudangky/lichsudangky.component').then(
+            (m) => m.LichsudangkyComponent
+          ),
+      },
     ],
   },
 
