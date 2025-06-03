@@ -308,4 +308,28 @@ export class LichTiemComponent implements OnInit {
         },
       });
   }
+  xoaLichTiem(maLichTiem: number) {
+    if (!confirm('Bạn có chắc chắn muốn xóa lịch tiêm này?')) return;
+
+    this.lichTiemService.deleteLichTiem(maLichTiem).subscribe({
+      next: () => {
+        // Tìm index
+        const index = this.danhSachLichTiem.findIndex(
+          (lt) => lt.maLichTiem === maLichTiem
+        );
+        if (index !== -1) {
+          // Gán lại mảng mới để Angular detect thay đổi
+          this.danhSachLichTiem = [
+            ...this.danhSachLichTiem.slice(0, index),
+            ...this.danhSachLichTiem.slice(index + 1),
+          ];
+        }
+        alert('Xóa lịch tiêm thành công');
+      },
+      error: (err) => {
+        console.error('Lỗi khi xóa:', err);
+        alert('Không thể xóa lịch tiêm.');
+      },
+    });
+  }
 }
