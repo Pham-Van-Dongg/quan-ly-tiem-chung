@@ -7,11 +7,12 @@ export interface MenuItem {
 }
 
 export const MENU_ITEMS: MenuItem[] = [
-  { label: 'Lịch tiêm', icon: 'event_note', route: '/lichtiem' },
-  { label: 'Loại vắc xin', icon: 'science', route: '/loaivacxin' },
-  { label: 'Đợt tiêm', icon: 'calendar_month', route: '/dottiem' },
-  { label: 'Cán bộ y tế', icon: 'event_note', route: '/canboyte' },
-  { label: 'Người dân', icon: 'home', route: '/nguoidan' },
-  { label: 'Tài khoản', icon: 'home', route: '/taikhoan' },
-  { label: 'Cập nhật thông tin', icon: 'home', route: '/capnhatthongtin' },
+  { label: 'Lịch tiêm', icon: 'event_note', route: '/lichtiem' }, // icon OK
+  { label: 'Loại vắc xin', icon: 'vaccines', route: '/loaivacxin' }, // icon liên quan đến vắc xin
+  { label: 'Đợt tiêm', icon: 'calendar_month', route: '/dottiem' }, // icon OK
+  { label: 'Cán bộ y tế', icon: 'medical_services', route: '/canboyte' }, // biểu tượng dịch vụ y tế
+  { label: 'Người dân', icon: 'groups', route: '/nguoidan' }, // biểu tượng người dân, nhóm
+  { label: 'Tài khoản', icon: 'account_circle', route: '/taikhoan' }, // biểu tượng tài khoản
+  { label: 'Cập nhật thông tin', icon: 'edit', route: '/capnhatthongtin' }, // biểu tượng chỉnh sửa
+  { label: 'Lịch sử đăng ký', icon: 'history', route: '/lichsudangky' }, // biểu tượng lịch sử
 ];
