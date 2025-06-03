@@ -92,15 +92,20 @@
               <!-- Nếu là tài khoản quản trị (loaiTaiKhoan === 1) -->
               <td *ngIf="loaiTaiKhoan === 1">
                 <button
-                  class="btn btn-warning btn-sm"
+                  class="btn btn-sm btn-outline-primary me-1"
                   (click)="chonLichTiemDeSua(lichtiem)"
                   data-bs-toggle="modal"
                   data-bs-target="#capNhatLichTiemModal"
                 >
-                  ✏️ Sửa
+                  ✏️
                 </button>
 
-                <button class="btn btn-danger btn-sm">🗑️ Xóa</button>
+                <button
+                  class="btn btn-sm btn-outline-danger"
+                  (click)="xoaLichTiem(lichtiem.maLichTiem)"
+                >
+                  🗑️
+                </button>
               </td>
             </tr>
           </tbody>
@@ -307,12 +312,14 @@
 
           <div class="mb-3">
             <label class="form-label">Trạng thái</label>
-            <input
-              type="text"
+            <select
               class="form-control"
               [(ngModel)]="newLichTiem.trangThai"
               name="trangThai"
-            />
+            >
+              <option value="Đã tiêm">Đã tiêm</option>
+              <option value="Chưa tiêm">Chưa tiêm</option>
+            </select>
           </div>
         </form>
       </div>
