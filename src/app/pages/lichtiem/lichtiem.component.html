@@ -5,13 +5,15 @@
       class="card-header bg-info text-white d-flex justify-content-between align-items-center"
     >
       <h5 class="mb-0">📋 Quản lý lịch tiêm</h5>
-      <button
-        class="btn btn-light btn-sm"
-        data-bs-toggle="modal"
-        data-bs-target="#themLichTiemModal"
-      >
-        ➕ Thêm lịch tiêm
-      </button>
+      <td *ngIf="loaiTaiKhoan === 1">
+        <button
+          class="btn btn-light btn-sm"
+          data-bs-toggle="modal"
+          data-bs-target="#themLichTiemModal"
+        >
+          ➕ Thêm lịch tiêm
+        </button>
+      </td>
     </div>
 
     <!-- Body -->
@@ -208,12 +210,14 @@
           <!-- Trạng thái -->
           <div class="mb-3">
             <label class="form-label">Trạng thái</label>
-            <input
-              type="text"
+            <select
               class="form-control"
               [(ngModel)]="newLichTiem.trangThai"
               name="trangThai"
-            />
+            >
+              <option value="Chưa tiêm">Chưa tiêm</option>
+              <option value="Đã tiêm">Đã tiêm</option>
+            </select>
           </div>
         </form>
       </div>

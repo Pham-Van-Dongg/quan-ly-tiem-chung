@@ -72,6 +72,18 @@ export class CapnhatthongtinComponent implements OnInit {
   }
 
   capNhatThongTin() {
+    if (
+      !this.nguoiDan.hoTen ||
+      !this.nguoiDan.ngaySinh ||
+      !this.nguoiDan.gioiTinh ||
+      !this.nguoiDan.cmndCccd ||
+      !this.nguoiDan.diaChi ||
+      !this.nguoiDan.soDienThoai
+    ) {
+      alert('Vui lòng điền đầy đủ thông tin hợp lệ.');
+      return;
+    }
+
     const body: NguoiDung = {
       maNd: this.maNd,
       hoTen: this.nguoiDan.hoTen,

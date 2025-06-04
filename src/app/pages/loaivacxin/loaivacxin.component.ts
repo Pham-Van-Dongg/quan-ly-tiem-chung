@@ -59,10 +59,16 @@ export class LoaivacxinComponent {
           lichTiems: [],
         };
 
-        // 👉 Đóng modal
-        const modalElement = document.getElementById('themVaccineModal');
-        const modal = bootstrap.Modal.getInstance(modalElement);
-        modal?.hide();
+        const modalEl = document.getElementById('themVaccineModal');
+        if (modalEl) {
+          const modal = (window as any).bootstrap.Modal.getInstance(modalEl);
+          modal.hide();
+        }
+        document.body.classList.remove('modal-open');
+        const backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) {
+          backdrop.remove();
+        }
 
         alert('Thêm thành công');
       },
