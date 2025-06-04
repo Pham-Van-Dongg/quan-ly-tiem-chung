@@ -3,7 +3,7 @@
     <div class="card-header bg-primary text-white">
       <h5 class="mb-0">📝 Cập nhật thông tin cá nhân</h5>
     </div>
-    <form (ngSubmit)="capNhatThongTin()">
+    <form #updateForm="ngForm" (ngSubmit)="capNhatThongTin()" novalidate>
       <div class="card-body">
         <div class="row g-3">
           <div class="col-md-6">
@@ -12,11 +12,32 @@
               type="text"
               class="form-control"
               id="hoTen"
-              [(ngModel)]="nguoiDan.hoTen"
               name="hoTen"
-              placeholder="Nhập họ tên"
+              [(ngModel)]="nguoiDan.hoTen"
               required
+              minlength="2"
+              maxlength="50"
+              pattern="[A-Za-z\sÀ-ỹ]+"
+              #hoTen="ngModel"
+              [ngClass]="{ 'is-invalid': hoTen.touched && hoTen.invalid }"
             />
+            <div
+              class="invalid-feedback"
+              *ngIf="hoTen.touched && hoTen.invalid"
+            >
+              <div *ngIf="hoTen.errors?.['required']">
+                Vui lòng nhập họ tên.
+              </div>
+              <div *ngIf="hoTen.errors?.['minlength']">
+                Họ tên phải có ít nhất 2 ký tự.
+              </div>
+              <div *ngIf="hoTen.errors?.['maxlength']">
+                Họ tên không được vượt quá 50 ký tự.
+              </div>
+              <div *ngIf="hoTen.errors?.['pattern']">
+                Họ tên chỉ được chứa chữ cái và khoảng trắng.
+              </div>
+            </div>
           </div>
 
           <div class="col-md-6">
@@ -25,10 +46,20 @@
               type="date"
               class="form-control"
               id="ngaySinh"
-              [(ngModel)]="nguoiDan.ngaySinh"
               name="ngaySinh"
+              [(ngModel)]="nguoiDan.ngaySinh"
               required
+              #ngaySinh="ngModel"
+              [ngClass]="{ 'is-invalid': ngaySinh.touched && ngaySinh.invalid }"
             />
+            <div
+              class="invalid-feedback"
+              *ngIf="ngaySinh.touched && ngaySinh.invalid"
+            >
+              <div *ngIf="ngaySinh.errors?.['required']">
+                Vui lòng chọn ngày sinh.
+              </div>
+            </div>
           </div>
 
           <div class="col-md-6">
@@ -36,15 +67,25 @@
             <select
               class="form-select"
               id="gioiTinh"
-              [(ngModel)]="nguoiDan.gioiTinh"
               name="gioiTinh"
+              [(ngModel)]="nguoiDan.gioiTinh"
               required
+              #gioiTinh="ngModel"
+              [ngClass]="{ 'is-invalid': gioiTinh.touched && gioiTinh.invalid }"
             >
               <option value="" disabled>-- Chọn giới tính --</option>
               <option value="Nam">Nam</option>
               <option value="Nữ">Nữ</option>
               <option value="Khác">Khác</option>
             </select>
+            <div
+              class="invalid-feedback"
+              *ngIf="gioiTinh.touched && gioiTinh.invalid"
+            >
+              <div *ngIf="gioiTinh.errors?.['required']">
+                Vui lòng chọn giới tính.
+              </div>
+            </div>
           </div>
 
           <div class="col-md-6">
@@ -53,11 +94,24 @@
               type="text"
               class="form-control"
               id="cmndCccd"
-              [(ngModel)]="nguoiDan.cmndCccd"
               name="cmndCccd"
-              placeholder="Nhập số CMND/CCCD"
+              [(ngModel)]="nguoiDan.cmndCccd"
               required
+              pattern="[0-9]{9,12}"
+              #cmndCccd="ngModel"
+              [ngClass]="{ 'is-invalid': cmndCccd.touched && cmndCccd.invalid }"
             />
+            <div
+              class="invalid-feedback"
+              *ngIf="cmndCccd.touched && cmndCccd.invalid"
+            >
+              <div *ngIf="cmndCccd.errors?.['required']">
+                Vui lòng nhập CMND/CCCD.
+              </div>
+              <div *ngIf="cmndCccd.errors?.['pattern']">
+                CMND/CCCD phải là số và có 9-12 chữ số.
+              </div>
+            </div>
           </div>
 
           <div class="col-md-6">
@@ -66,11 +120,24 @@
               type="text"
               class="form-control"
               id="diaChi"
-              [(ngModel)]="nguoiDan.diaChi"
               name="diaChi"
-              placeholder="Nhập địa chỉ"
+              [(ngModel)]="nguoiDan.diaChi"
               required
+              minlength="5"
+              #diaChi="ngModel"
+              [ngClass]="{ 'is-invalid': diaChi.touched && diaChi.invalid }"
             />
+            <div
+              class="invalid-feedback"
+              *ngIf="diaChi.touched && diaChi.invalid"
+            >
+              <div *ngIf="diaChi.errors?.['required']">
+                Vui lòng nhập địa chỉ.
+              </div>
+              <div *ngIf="diaChi.errors?.['minlength']">
+                Địa chỉ phải có ít nhất 5 ký tự.
+              </div>
+            </div>
           </div>
 
           <div class="col-md-6">
@@ -79,16 +146,37 @@
               type="tel"
               class="form-control"
               id="soDienThoai"
-              [(ngModel)]="nguoiDan.soDienThoai"
               name="soDienThoai"
-              placeholder="Nhập SĐT"
+              [(ngModel)]="nguoiDan.soDienThoai"
               required
+              pattern="[0-9]{10}"
+              #soDienThoai="ngModel"
+              [ngClass]="{
+                'is-invalid': soDienThoai.touched && soDienThoai.invalid
+              }"
             />
+            <div
+              class="invalid-feedback"
+              *ngIf="soDienThoai.touched && soDienThoai.invalid"
+            >
+              <div *ngIf="soDienThoai.errors?.['required']">
+                Vui lòng nhập số điện thoại.
+              </div>
+              <div *ngIf="soDienThoai.errors?.['pattern']">
+                Số điện thoại phải có đúng 10 chữ số.
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <div class="card-footer text-end">
-        <button type="submit" class="btn btn-success">💾 Cập nhật</button>
+        <button
+          type="submit"
+          class="btn btn-success"
+          [disabled]="updateForm.invalid"
+        >
+          💾 Cập nhật
+        </button>
       </div>
     </form>
   </div>

@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {
+  FormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { LichTiemFilter } from './lich-tiem-filter.pipe';
@@ -72,7 +77,8 @@ export class LichTiemComponent implements OnInit {
     private dotTiemService: DotTiemService,
     private canBoYteService: CanBoYteService,
     private authService: AuthService,
-    private http: HttpClient
+    private http: HttpClient,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
@@ -80,6 +86,7 @@ export class LichTiemComponent implements OnInit {
     if (userString) {
       const user = JSON.parse(userString);
       this.loaiTaiKhoan = Number(user?.taiKhoan?.loaiTaiKhoan); // đảm bảo là kiểu số
+      this.currentMaNd = Number(user?.taiKhoan?.maNd);
     }
     // Ví dụ lấy từ localStorage
     const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
@@ -153,6 +160,9 @@ export class LichTiemComponent implements OnInit {
             modalElement
           );
           modal.hide();
+          document
+            .querySelectorAll('.modal-backdrop')
+            .forEach((el) => el.remove());
         }
       },
       error: (err) => {
@@ -297,7 +307,7 @@ export class LichTiemComponent implements OnInit {
               ? {
                   ...lt,
                   trangThaiDangKy: false,
-                  maNd: 0,
+                  maNd: this.currentMaNd,
                   maNdNavigation: null,
                 }
               : lt
