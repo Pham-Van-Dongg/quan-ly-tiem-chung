@@ -269,6 +269,8 @@ export class LichTiemComponent implements OnInit {
             const modal = (window as any).bootstrap.Modal.getInstance(
               modalElement
             );
+            const backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) backdrop.remove();
             modal.hide();
           }
         },

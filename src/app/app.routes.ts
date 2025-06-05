@@ -86,6 +86,13 @@ export const routes: Routes = [
             (m) => m.LichsudangkyComponent
           ),
       },
+      {
+        path: 'chatbot',
+        loadComponent: () =>
+          import('./gpt-chat/gpt-chat.component').then(
+            (m) => m.GptChatComponent
+          ),
+      },
     ],
   },
 
