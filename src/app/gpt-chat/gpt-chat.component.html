@@ -1,0 +1,51 @@
+<div class="container">
+  <div class="card shadow" style="height: 89vh">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">💬 GPT Chatbot</h5>
+    </div>
+
+    <div class="card-body chat-box" style="height: 400px; overflow-y: auto">
+      <div *ngFor="let msg of messages" class="mb-3">
+        <div [ngClass]="msg.role === 'user' ? 'text-end' : 'text-start'">
+          <span
+            class="badge"
+            [ngClass]="
+              msg.role === 'user' ? 'bg-info text-dark' : 'bg-secondary'
+            "
+          >
+            {{ msg.role === "user" ? "Bạn" : "GPT" }}
+          </span>
+          <p
+            class="mt-1 mb-0"
+            [ngClass]="msg.role === 'user' ? 'text-end' : 'text-start'"
+          >
+            {{ msg.content }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-footer d-flex gap-2">
+      <input
+        [(ngModel)]="userInput"
+        class="form-control"
+        type="text"
+        placeholder="Nhập tin nhắn..."
+        (keydown.enter)="sendMessage()"
+        [disabled]="isLoading"
+      />
+      <!-- Nút tư vấn nhanh -->
+
+      <button
+        class="btn btn-success"
+        (click)="sendMessage()"
+        [disabled]="isLoading"
+      >
+        {{ isLoading ? "Đang gửi..." : "Gửi" }}
+      </button>
+      <button class="btn btn-danger" (click)="sendQuickAdvice()">
+        🤖 Tư vấn nhanh
+      </button>
+    </div>
+  </div>
+</div>

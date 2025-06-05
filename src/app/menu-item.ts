@@ -15,4 +15,5 @@ export const MENU_ITEMS: MenuItem[] = [
   { label: 'Tài khoản', icon: 'account_circle', route: '/taikhoan' }, // biểu tượng tài khoản
   { label: 'Cập nhật thông tin', icon: 'edit', route: '/capnhatthongtin' }, // biểu tượng chỉnh sửa
   { label: 'Lịch sử đăng ký', icon: 'history', route: '/lichsudangky' }, // biểu tượng lịch sử
+  { label: 'Chatbot', icon: 'chat', route: '/chatbot' },
 ];
