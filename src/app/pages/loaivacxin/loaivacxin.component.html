@@ -116,7 +116,7 @@
       </div>
       <div class="modal-body">
         <!-- Nội dung form thêm vắc xin ở đây -->
-        <form>
+        <form #vaccineForm="ngForm" novalidate>
           <div class="mb-3">
             <label for="tenVaccine" class="form-label">Tên vắc xin</label>
             <input
@@ -125,8 +125,18 @@
               id="tenVaccine"
               [(ngModel)]="newVaccine.tenVac"
               name="tenVaccine"
+              required
+              minlength="2"
+              #tenVaccine="ngModel"
             />
+            <div
+              *ngIf="tenVaccine.invalid && tenVaccine.touched"
+              class="text-danger"
+            >
+              Tên vắc xin là bắt buộc (ít nhất 2 ký tự).
+            </div>
           </div>
+
           <div class="mb-3">
             <label for="hangSanXuat" class="form-label">Hãng sản xuất</label>
             <input
@@ -135,29 +145,55 @@
               id="hangSanXuat"
               [(ngModel)]="newVaccine.hangSanXuat"
               name="hangSanXuat"
+              required
+              #hangSanXuat="ngModel"
             />
+            <div
+              *ngIf="hangSanXuat.invalid && hangSanXuat.touched"
+              class="text-danger"
+            >
+              Hãng sản xuất là bắt buộc.
+            </div>
           </div>
+
           <div class="mb-3">
             <label for="soMui" class="form-label">Số mũi</label>
             <input
-              type="text"
+              type="number"
               class="form-control"
               id="soMui"
               [(ngModel)]="newVaccine.soMui"
               name="soMui"
+              required
+              min="1"
+              max="10"
+              #soMui="ngModel"
             />
+            <div *ngIf="soMui.invalid && soMui.touched" class="text-danger">
+              Số mũi là số từ 1 đến 10.
+            </div>
           </div>
+
           <div class="mb-3">
             <label for="thoiGianGiuaMui" class="form-label"
-              >Thời gian giữa mũi</label
+              >Thời gian giữa mũi (ngày)</label
             >
             <input
-              type="text"
+              type="number"
               class="form-control"
               id="thoiGianGiuaMui"
               [(ngModel)]="newVaccine.thoiGianGiuaMui"
               name="thoiGianGiuaMui"
+              required
+              min="1"
+              #thoiGianGiuaMui="ngModel"
             />
+            <div
+              *ngIf="thoiGianGiuaMui.invalid && thoiGianGiuaMui.touched"
+              class="text-danger"
+            >
+              Thời gian giữa mũi phải ít nhất 1 ngày.
+            </div>
           </div>
         </form>
       </div>
@@ -218,7 +254,7 @@
         ></button>
       </div>
       <div class="modal-body">
-        <form>
+        <form #editForm="ngForm" novalidate>
           <div class="mb-3">
             <label for="edittenVaccine" class="form-label">Tên vắc xin</label>
             <input
@@ -227,8 +263,18 @@
               id="edittenVaccine"
               [(ngModel)]="vaccineDangSua.tenVac"
               name="edittenVaccine"
+              required
+              minlength="2"
+              #editTenVac="ngModel"
             />
+            <div
+              *ngIf="editTenVac.invalid && editTenVac.touched"
+              class="text-danger"
+            >
+              Tên vắc xin là bắt buộc (ít nhất 2 ký tự).
+            </div>
           </div>
+
           <div class="mb-3">
             <label for="editHangSanXuat" class="form-label"
               >Hãng sản xuất</label
@@ -239,29 +285,58 @@
               id="editHangSanXuat"
               [(ngModel)]="vaccineDangSua.hangSanXuat"
               name="editHangSanXuat"
+              required
+              #editHangSanXuat="ngModel"
             />
+            <div
+              *ngIf="editHangSanXuat.invalid && editHangSanXuat.touched"
+              class="text-danger"
+            >
+              Hãng sản xuất là bắt buộc.
+            </div>
           </div>
+
           <div class="mb-3">
             <label for="editSoMui" class="form-label">Số mũi</label>
             <input
-              type="text"
+              type="number"
               class="form-control"
               id="editSoMui"
               [(ngModel)]="vaccineDangSua.soMui"
               name="editSoMui"
+              required
+              min="1"
+              max="10"
+              #editSoMui="ngModel"
             />
+            <div
+              *ngIf="editSoMui.invalid && editSoMui.touched"
+              class="text-danger"
+            >
+              Số mũi phải từ 1 đến 10.
+            </div>
           </div>
+
           <div class="mb-3">
             <label for="editthoiGianGiuaMui" class="form-label"
-              >Thời gian giữa mũi</label
+              >Thời gian giữa mũi (ngày)</label
             >
             <input
-              type="text"
+              type="number"
               class="form-control"
               id="editthoiGianGiuaMui"
               [(ngModel)]="vaccineDangSua.thoiGianGiuaMui"
               name="editthoiGianGiuaMui"
+              required
+              min="1"
+              #editThoiGian="ngModel"
             />
+            <div
+              *ngIf="editThoiGian.invalid && editThoiGian.touched"
+              class="text-danger"
+            >
+              Thời gian giữa mũi phải ít nhất 1 ngày.
+            </div>
           </div>
         </form>
       </div>

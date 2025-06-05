@@ -41,15 +41,21 @@ export class LoaivacxinComponent {
     lichTiems: [],
   };
   themVaccine(): void {
+    if (
+      !this.newVaccine.tenVac ||
+      !this.newVaccine.hangSanXuat ||
+      this.newVaccine.soMui <= 0 ||
+      this.newVaccine.thoiGianGiuaMui <= 0
+    ) {
+      alert('Vui lòng điền đầy đủ và chính xác thông tin vắc xin.');
+      return;
+    }
+
     this.VacxinService.addVacccine(this.newVaccine).subscribe({
       next: (data) => {
         this.danhSachVaccine.push(data);
-
-        // 👉 Reset tìm kiếm và về lại trang 1 để hiển thị bản ghi mới
         this.tuKhoaTimKiem = '';
         this.page = 1;
-
-        // 👉 Reset form
         this.newVaccine = {
           maVac: 0,
           tenVac: '',
@@ -58,18 +64,14 @@ export class LoaivacxinComponent {
           thoiGianGiuaMui: 0,
           lichTiems: [],
         };
-
         const modalEl = document.getElementById('themVaccineModal');
         if (modalEl) {
-          const modal = (window as any).bootstrap.Modal.getInstance(modalEl);
+          const modal = bootstrap.Modal.getInstance(modalEl);
           modal.hide();
         }
         document.body.classList.remove('modal-open');
         const backdrop = document.querySelector('.modal-backdrop');
-        if (backdrop) {
-          backdrop.remove();
-        }
-
+        if (backdrop) backdrop.remove();
         alert('Thêm thành công');
       },
       error: (err) => {
@@ -101,8 +103,19 @@ export class LoaivacxinComponent {
     this.vaccineDangSua = { ...vaccine };
   }
   luuChinhSua() {
+    if (
+      !this.vaccineDangSua.tenVac ||
+      !this.vaccineDangSua.hangSanXuat ||
+      this.vaccineDangSua.soMui <= 0 ||
+      this.vaccineDangSua.thoiGianGiuaMui <= 0
+    ) {
+      alert('Vui lòng kiểm tra lại thông tin đã nhập.');
+      return;
+    }
+
     this.capNhatVaccine(this.vaccineDangSua);
   }
+
   capNhatVaccine(vaccineDaSua: any) {
     this.VacxinService.updateVaccine(
       vaccineDaSua.maVac,

@@ -42,12 +42,20 @@ export class CanboyteComponent implements OnInit {
     lichTiems: [],
   };
   themCanBo(): void {
+    if (
+      !this.newCanBo.hoTen ||
+      !this.newCanBo.soDienThoai ||
+      !/^0[0-9]{9}$/.test(this.newCanBo.soDienThoai) ||
+      !this.newCanBo.chucVu ||
+      !this.newCanBo.donViCongTac
+    ) {
+      alert('Vui lòng kiểm tra lại các trường nhập.');
+      return;
+    }
+
     this.CanBoYteService.addCanBo(this.newCanBo).subscribe({
       next: (data) => {
-        // Sau khi thêm thành công thì làm mới danh sách và đóng modal
         this.danhSachCanBo.push(data);
-
-        // Reset form
         this.newCanBo = {
           maCb: 0,
           hoTen: '',
@@ -56,8 +64,6 @@ export class CanboyteComponent implements OnInit {
           donViCongTac: '',
           lichTiems: [],
         };
-
-        // Đóng modal bằng Bootstrap JS
         const modalElement = document.getElementById('themCanBoModal');
         const modal = bootstrap.Modal.getInstance(modalElement);
         modal.hide();
@@ -68,6 +74,7 @@ export class CanboyteComponent implements OnInit {
       },
     });
   }
+
   selectedCanBo: CanBoYte | null = null;
 
   xemChiTiet(maCb: number): void {
@@ -92,7 +99,17 @@ export class CanboyteComponent implements OnInit {
   }
 
   luuChinhSua() {
-    // Gửi dữ liệu sửa về API hoặc cập nhật danh sách
+    if (
+      !this.canBoDangSua.hoTen ||
+      !this.canBoDangSua.soDienThoai ||
+      !/^0[0-9]{9}$/.test(this.canBoDangSua.soDienThoai) ||
+      !this.canBoDangSua.chucVu ||
+      !this.canBoDangSua.donViCongTac
+    ) {
+      alert('Vui lòng kiểm tra lại thông tin trước khi lưu.');
+      return;
+    }
+
     this.capNhatCanBo(this.canBoDangSua);
   }
 

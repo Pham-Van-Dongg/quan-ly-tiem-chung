@@ -142,7 +142,7 @@
         ></button>
       </div>
       <div class="modal-body">
-        <form>
+        <form #lichTiemForm="ngForm" novalidate>
           <!-- Vaccine -->
           <div class="mb-3">
             <label class="form-label">Vắc xin</label>
@@ -150,11 +150,17 @@
               class="form-control"
               [(ngModel)]="newLichTiem.maVac"
               name="maVac"
+              required
+              #maVac="ngModel"
             >
+              <option value="" disabled selected>-- Chọn vắc xin --</option>
               <option *ngFor="let vac of vaccines" [value]="vac.maVac">
                 {{ vac.tenVac }}
               </option>
             </select>
+            <div *ngIf="maVac.invalid && maVac.touched" class="text-danger">
+              Vui lòng chọn vắc xin.
+            </div>
           </div>
 
           <!-- Mũi thứ -->
@@ -165,7 +171,13 @@
               class="form-control"
               [(ngModel)]="newLichTiem.muiThu"
               name="muiThu"
+              required
+              min="1"
+              #muiThu="ngModel"
             />
+            <div *ngIf="muiThu.invalid && muiThu.touched" class="text-danger">
+              Mũi tiêm phải là số ≥ 1.
+            </div>
           </div>
 
           <!-- Ngày tiêm -->
@@ -174,9 +186,18 @@
             <input
               type="date"
               class="form-control"
-              (change)="onNgayTiemChange($event)"
+              required
               name="ngayTiem"
+              (change)="onNgayTiemChange($event)"
+              #ngayTiem="ngModel"
+              ngModel
             />
+            <div
+              *ngIf="ngayTiem.invalid && ngayTiem.touched"
+              class="text-danger"
+            >
+              Vui lòng chọn ngày tiêm.
+            </div>
           </div>
 
           <!-- Đợt tiêm -->
@@ -186,11 +207,17 @@
               class="form-control"
               [(ngModel)]="newLichTiem.maDot"
               name="maDot"
+              required
+              #maDot="ngModel"
             >
+              <option value="" disabled selected>-- Chọn đợt tiêm --</option>
               <option *ngFor="let dot of dotTiems" [value]="dot.maDot">
                 {{ dot.diaDiem }} - {{ dot.ngayBatDau | date : "dd/MM/yyyy" }}
               </option>
             </select>
+            <div *ngIf="maDot.invalid && maDot.touched" class="text-danger">
+              Vui lòng chọn đợt tiêm.
+            </div>
           </div>
 
           <!-- Cán bộ y tế -->
@@ -200,11 +227,17 @@
               class="form-control"
               [(ngModel)]="newLichTiem.maCb"
               name="maCb"
+              required
+              #maCb="ngModel"
             >
+              <option value="" disabled selected>-- Chọn cán bộ --</option>
               <option *ngFor="let cb of canBoYtes" [value]="cb.maCb">
                 {{ cb.hoTen }}
               </option>
             </select>
+            <div *ngIf="maCb.invalid && maCb.touched" class="text-danger">
+              Vui lòng chọn cán bộ y tế.
+            </div>
           </div>
 
           <!-- Trạng thái -->
@@ -214,10 +247,19 @@
               class="form-control"
               [(ngModel)]="newLichTiem.trangThai"
               name="trangThai"
+              required
+              #trangThai="ngModel"
             >
+              <option value="" disabled selected>-- Chọn trạng thái --</option>
               <option value="Chưa tiêm">Chưa tiêm</option>
               <option value="Đã tiêm">Đã tiêm</option>
             </select>
+            <div
+              *ngIf="trangThai.invalid && trangThai.touched"
+              class="text-danger"
+            >
+              Vui lòng chọn trạng thái.
+            </div>
           </div>
         </form>
       </div>

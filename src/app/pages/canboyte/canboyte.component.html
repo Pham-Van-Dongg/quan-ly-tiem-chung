@@ -114,7 +114,7 @@
       </div>
       <div class="modal-body">
         <!-- Nội dung form thêm cán bộ ở đây -->
-        <form>
+        <form #canBoForm="ngForm" novalidate>
           <div class="mb-3">
             <label for="tenCanBo" class="form-label">Tên cán bộ</label>
             <input
@@ -123,18 +123,38 @@
               id="tenCanBo"
               [(ngModel)]="newCanBo.hoTen"
               name="tenCanBo"
+              required
+              minlength="2"
+              #tenCanBo="ngModel"
             />
+            <div
+              *ngIf="tenCanBo.invalid && tenCanBo.touched"
+              class="text-danger"
+            >
+              Tên cán bộ là bắt buộc (tối thiểu 2 ký tự).
+            </div>
           </div>
+
           <div class="mb-3">
             <label for="soDienThoai" class="form-label">Số điện thoại</label>
             <input
-              type="text"
+              type="tel"
               class="form-control"
               id="soDienThoai"
               [(ngModel)]="newCanBo.soDienThoai"
               name="soDienThoai"
+              required
+              pattern="^0[0-9]{9}$"
+              #soDienThoai="ngModel"
             />
+            <div
+              *ngIf="soDienThoai.invalid && soDienThoai.touched"
+              class="text-danger"
+            >
+              Số điện thoại phải bắt đầu bằng 0 và có 10 chữ số.
+            </div>
           </div>
+
           <div class="mb-3">
             <label for="chucVu" class="form-label">Chức vụ</label>
             <input
@@ -143,8 +163,14 @@
               id="chucVu"
               [(ngModel)]="newCanBo.chucVu"
               name="chucVu"
+              required
+              #chucVu="ngModel"
             />
+            <div *ngIf="chucVu.invalid && chucVu.touched" class="text-danger">
+              Chức vụ là bắt buộc.
+            </div>
           </div>
+
           <div class="mb-3">
             <label for="donVi" class="form-label">Đơn vị công tác</label>
             <input
@@ -153,7 +179,12 @@
               id="donVi"
               [(ngModel)]="newCanBo.donViCongTac"
               name="donVi"
+              required
+              #donVi="ngModel"
             />
+            <div *ngIf="donVi.invalid && donVi.touched" class="text-danger">
+              Đơn vị công tác là bắt buộc.
+            </div>
           </div>
         </form>
       </div>
@@ -210,7 +241,7 @@
         ></button>
       </div>
       <div class="modal-body">
-        <form>
+        <form #editCanBoForm="ngForm" novalidate>
           <div class="mb-3">
             <label for="editTenCanBo" class="form-label">Tên cán bộ</label>
             <input
@@ -219,20 +250,40 @@
               id="editTenCanBo"
               [(ngModel)]="canBoDangSua.hoTen"
               name="editTenCanBo"
+              required
+              minlength="2"
+              #editTenCanBo="ngModel"
             />
+            <div
+              *ngIf="editTenCanBo.invalid && editTenCanBo.touched"
+              class="text-danger"
+            >
+              Tên cán bộ là bắt buộc (tối thiểu 2 ký tự).
+            </div>
           </div>
+
           <div class="mb-3">
             <label for="editSoDienThoai" class="form-label"
               >Số điện thoại</label
             >
             <input
-              type="text"
+              type="tel"
               class="form-control"
               id="editSoDienThoai"
               [(ngModel)]="canBoDangSua.soDienThoai"
               name="editSoDienThoai"
+              required
+              pattern="^0[0-9]{9}$"
+              #editSoDienThoai="ngModel"
             />
+            <div
+              *ngIf="editSoDienThoai.invalid && editSoDienThoai.touched"
+              class="text-danger"
+            >
+              Số điện thoại phải bắt đầu bằng 0 và có 10 chữ số.
+            </div>
           </div>
+
           <div class="mb-3">
             <label for="editChucVu" class="form-label">Chức vụ</label>
             <input
@@ -241,8 +292,17 @@
               id="editChucVu"
               [(ngModel)]="canBoDangSua.chucVu"
               name="editChucVu"
+              required
+              #editChucVu="ngModel"
             />
+            <div
+              *ngIf="editChucVu.invalid && editChucVu.touched"
+              class="text-danger"
+            >
+              Chức vụ là bắt buộc.
+            </div>
           </div>
+
           <div class="mb-3">
             <label for="editDonVi" class="form-label">Đơn vị công tác</label>
             <input
@@ -251,7 +311,15 @@
               id="editDonVi"
               [(ngModel)]="canBoDangSua.donViCongTac"
               name="editDonVi"
+              required
+              #editDonVi="ngModel"
             />
+            <div
+              *ngIf="editDonVi.invalid && editDonVi.touched"
+              class="text-danger"
+            >
+              Đơn vị công tác là bắt buộc.
+            </div>
           </div>
         </form>
       </div>
