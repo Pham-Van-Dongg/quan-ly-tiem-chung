@@ -51,12 +51,12 @@ export class GptChatComponent {
         const headers = new HttpHeaders({
           'Content-Type': 'application/json',
           Authorization:
-            'Bearer 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',
+            'Bearer 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`',
           'HTTP-Referer': 'http://localhost:4200',
         });
 
         const body = {
-          model: 'openai/gpt-3.5-turbo',
+          model: 'deepseek/deepseek-r1-0528:free',
           messages,
         };
 

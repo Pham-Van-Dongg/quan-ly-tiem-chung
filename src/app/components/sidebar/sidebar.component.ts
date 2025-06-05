@@ -21,7 +21,9 @@ export class SidebarComponent implements OnInit {
       this.menuItems = MENU_ITEMS; // Admin
     } else if (loaiTaiKhoan === 2) {
       this.menuItems = MENU_ITEMS.filter((item) =>
-        ['/lichtiem', '/capnhatthongtin', '/lichsudangky'].includes(item.route)
+        ['/lichtiem', '/capnhatthongtin', '/lichsudangky', '/chatbot'].includes(
+          item.route
+        )
       );
     } else {
       this.menuItems = [];
