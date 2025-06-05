@@ -123,10 +123,35 @@ export class LichTiemComponent implements OnInit {
   currentUserId: number = Number(localStorage.getItem('userId'));
 
   luuLichTiem() {
+    const lich = this.newLichTiem;
+
+    // 👉 Kiểm tra các trường bắt buộc
+    const isInvalid =
+      !lich.maVac ||
+      !lich.maDot ||
+      !lich.maCb ||
+      !lich.trangThai ||
+      !lich.muiThu ||
+      lich.muiThu <= 0 ||
+      !lich.ngayTiem ||
+      !lich.ngayTiem.year ||
+      lich.ngayTiem.year <= 0 ||
+      !lich.ngayTiem.month ||
+      lich.ngayTiem.month <= 0 ||
+      !lich.ngayTiem.day ||
+      lich.ngayTiem.day <= 0;
+
+    if (isInvalid) {
+      alert('❌ Vui lòng nhập đầy đủ và hợp lệ các trường trong biểu mẫu.');
+      return;
+    }
+
+    // ✅ Nếu hợp lệ, tiếp tục gọi API
     this.lichTiemService.addLichTiem(this.newLichTiem).subscribe({
       next: (newLichTiem) => {
-        alert('Tạo lịch tiêm thành công');
-        // Cập nhật danh sách
+        alert('✅ Tạo lịch tiêm thành công');
+
+        // Cập nhật danh sách hiện tại
         this.danhSachLichTiem.push({
           ...newLichTiem,
           maVacNavigation:
@@ -138,6 +163,7 @@ export class LichTiemComponent implements OnInit {
           maNdNavigation:
             this.nguoiDans.find((n) => n.maNd === newLichTiem.maNd) || null,
         });
+
         // Reset form
         this.newLichTiem = {
           maLichTiem: 0,
@@ -153,23 +179,25 @@ export class LichTiemComponent implements OnInit {
           maCbNavigation: null,
           maNdNavigation: null,
         };
+
         // Đóng modal
         const modalElement = document.getElementById('themLichTiemModal');
         if (modalElement) {
           const modal = (window as any).bootstrap.Modal.getInstance(
             modalElement
           );
-          modal.hide();
+          modal?.hide();
           document
             .querySelectorAll('.modal-backdrop')
-            .forEach((el) => el.remove());
+            ?.forEach((el) => el.remove());
         }
       },
       error: (err) => {
-        alert('Lỗi khi tạo lịch tiêm: ' + err.message);
+        alert('❌ Lỗi khi tạo lịch tiêm: ' + err.message);
       },
     });
   }
+
   chonLichTiemDeSua(lichtiem: LichTiemExt) {
     let ngayTiemObj = lichtiem.ngayTiem;
 
