@@ -61,13 +61,12 @@ export class RegisterService {
     );
   }
 
-  // Hàm loại bỏ tham chiếu vòng và chỉ giữ dữ liệu cần thiết
   private sanitizeData(data: any): any {
     const seen = new WeakSet();
     const replacer = (key: string, value: any) => {
       if (typeof value === 'object' && value !== null) {
         if (seen.has(value)) {
-          return undefined; // Loại bỏ tham chiếu vòng
+          return undefined;
         }
         seen.add(value);
 

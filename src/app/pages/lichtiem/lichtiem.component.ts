@@ -82,13 +82,13 @@ export class LichTiemComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const userString = localStorage.getItem('currentUser'); // key phải đúng
+    const userString = localStorage.getItem('currentUser'); // key
     if (userString) {
       const user = JSON.parse(userString);
       this.loaiTaiKhoan = Number(user?.taiKhoan?.loaiTaiKhoan); // đảm bảo là kiểu số
       this.currentMaNd = Number(user?.taiKhoan?.maNd);
     }
-    // Ví dụ lấy từ localStorage
+    //lấy từ localStorage
     const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
     this.loaiTaiKhoan = Number(user?.taiKhoan?.loaiTaiKhoan || 0);
 
@@ -125,7 +125,6 @@ export class LichTiemComponent implements OnInit {
   luuLichTiem() {
     const lich = this.newLichTiem;
 
-    // 👉 Kiểm tra các trường bắt buộc
     const isInvalid =
       !lich.maVac ||
       !lich.maDot ||
@@ -146,7 +145,6 @@ export class LichTiemComponent implements OnInit {
       return;
     }
 
-    // ✅ Nếu hợp lệ, tiếp tục gọi API
     this.lichTiemService.addLichTiem(this.newLichTiem).subscribe({
       next: (newLichTiem) => {
         alert('✅ Tạo lịch tiêm thành công');
@@ -201,7 +199,7 @@ export class LichTiemComponent implements OnInit {
   chonLichTiemDeSua(lichtiem: LichTiemExt) {
     let ngayTiemObj = lichtiem.ngayTiem;
 
-    // Nếu là chuỗi ngày, chuyển sang Date rồi lấy year, month, day
+    // Nchuyển sang Date rồi lấy year, month, day
     if (typeof ngayTiemObj === 'string') {
       const date = new Date(ngayTiemObj);
       ngayTiemObj = {
@@ -263,7 +261,7 @@ export class LichTiemComponent implements OnInit {
             maNdNavigation: null,
           };
 
-          // Đóng modal (giả sử modal cập nhật có id này)
+          // Đóng modal
           const modalElement = document.getElementById('capNhatLichTiemModal');
           if (modalElement) {
             const modal = (window as any).bootstrap.Modal.getInstance(
@@ -294,7 +292,7 @@ export class LichTiemComponent implements OnInit {
       ...lichtiem,
       maLichTiem: 0, // Đặt về 0 để tạo mới
       maNd: this.currentMaNd, // Gán mã người dùng hiện tại
-      trangThai: '', // Trạng thái mặc định (đã tiêm/chưa tiêm)
+      trangThai: '',
     };
 
     this.lichTiemService.dangKyLichTiemNguoiDung(lichTiemMoi).subscribe({

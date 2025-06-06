@@ -14,7 +14,7 @@ export class LichTiemService {
     const date = new Date(dateString);
     return {
       year: date.getFullYear(),
-      month: date.getMonth() + 1, // getMonth() trả về 0-11, nên +1
+      month: date.getMonth() + 1, // getMonth() trả về 0-11, -> +1
       day: date.getDate(),
     };
   }
@@ -66,7 +66,7 @@ export class LichTiemService {
       .pipe(
         map((lt) => ({
           ...lt,
-          ngayTiem: this.toDateObject(lt.ngayTiem as any), // Chuyển chuỗi về dạng Date nếu cần
+          ngayTiem: this.toDateObject(lt.ngayTiem as any),
         })),
         catchError((err) => {
           console.error('Lỗi khi thêm lịch tiêm (không người dùng):', err);
@@ -99,7 +99,7 @@ export class LichTiemService {
       maVac: lichTiem.maVac,
       maDot: lichTiem.maDot,
       maCb: lichTiem.maCb,
-      ngayTiem: lichTiem.ngayTiem, // Không gọi toDateString nữa
+      ngayTiem: lichTiem.ngayTiem,
       muiThu: lichTiem.muiThu,
       trangThai: lichTiem.trangThai,
     };
@@ -109,7 +109,7 @@ export class LichTiemService {
       .pipe(
         map((lt) => ({
           ...lt,
-          ngayTiem: this.toDateObject(lt.ngayTiem as any), // vẫn cần parse lại khi nhận về
+          ngayTiem: this.toDateObject(lt.ngayTiem as any),
         })),
         catchError((err) => {
           console.error('Lỗi khi cập nhật lịch tiêm:', err);

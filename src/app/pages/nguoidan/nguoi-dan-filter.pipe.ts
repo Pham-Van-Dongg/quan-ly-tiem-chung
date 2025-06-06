@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'NguoiDanFilter',
-  standalone: true, // Angular 15+ trở lên dùng standalone pipe
+  standalone: true,
 })
 export class NguoiDanFilterPipe implements PipeTransform {
   transform(danhSach: any[], tuKhoa: string): any[] {

@@ -122,7 +122,7 @@ export class LoaivacxinComponent {
       vaccineDaSua
     ).subscribe({
       next: (updated) => {
-        // ✅ Gọi lại danh sách và cập nhật giao diện
+        // Gọi lại danh sách và cập nhật giao diện
         this.VacxinService.getDanhSachVaccine().subscribe({
           next: (danhSachMoi) => {
             this.danhSachVaccine = danhSachMoi; // Cập nhật danh sách hiển thị

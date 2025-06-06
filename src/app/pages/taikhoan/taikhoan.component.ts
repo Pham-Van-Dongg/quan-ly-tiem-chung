@@ -34,7 +34,6 @@ export class TaikhoanComponent implements OnInit {
       next: (data) => {
         this.danhSachTaiKhoan = data;
 
-        // Gọi API lấy thông tin người dân cho từng tài khoản
         this.danhSachTaiKhoan.forEach((tk) => {
           if (tk.maNd != null) {
             this.nguoiDanService.getNguoiDanById(tk.maNd).subscribe({

@@ -30,15 +30,12 @@ export class GptChatComponent {
     this.userInput = '';
     this.isLoading = true;
 
-    // 🔁 Bước 1: Lấy danh sách vắc xin từ backend
     this.http.get<any>('https://localhost:7025/api/Vaccines').subscribe({
       next: (vaccineData) => {
         const vaccineListText = this.convertVaccineListToText(vaccineData);
 
-        // ✅ Log để bạn kiểm tra xem vaccine có được convert đúng không
         console.log('📦 Danh sách vắc xin dạng văn bản:\n', vaccineListText);
 
-        // 🔁 Bước 2: Tạo prompt rõ ràng cho GPT
         const systemPrompt = this.buildPromptFromVaccines(vaccineListText);
 
         const messages = [
@@ -51,16 +48,15 @@ export class GptChatComponent {
         const headers = new HttpHeaders({
           'Content-Type': 'application/json',
           Authorization:
-            'Bearer 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`',
+            'Bearer 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',
           'HTTP-Referer': 'http://localhost:4200',
         });
 
         const body = {
-          model: 'deepseek/deepseek-r1-0528:free',
+          model: 'deepseek/deepseek-r1-0528-qwen3-8b:free',
           messages,
         };
 
-        // 🔁 Bước 3: Gửi tới GPT
         this.http
           .post<any>('https://openrouter.ai/api/v1/chat/completions', body, {
             headers,
@@ -92,7 +88,6 @@ export class GptChatComponent {
     });
   }
 
-  // ✅ Hàm convert JSON → văn bản dễ hiểu
   convertVaccineListToText(json: any): string {
     if (!json || !json.$values) return 'Không có dữ liệu vắc xin.';
     return json.$values
@@ -107,7 +102,6 @@ export class GptChatComponent {
       .join('\n');
   }
 
-  // ✅ Prompt system được sinh động + dễ điều chỉnh
   buildPromptFromVaccines(vaccineListText: string): string {
     return `
 Bạn là một trợ lý tư vấn vắc xin cho phòng khám.

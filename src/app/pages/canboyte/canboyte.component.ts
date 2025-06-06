@@ -123,7 +123,6 @@ export class CanboyteComponent implements OnInit {
           this.danhSachCanBo[index] = updated;
         }
 
-        // Đóng modal nếu có
         const modalElement = document.getElementById('suaCanBoModal');
         const modal = bootstrap.Modal.getInstance(modalElement);
         modal?.hide();
