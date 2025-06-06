@@ -7,7 +7,7 @@ import { HosoTiemchungComponent } from './pages/hoso-tiemchung/hoso-tiemchung.co
 import { provideHttpClient } from '@angular/common/http';
 import { CanboyteComponent } from './pages/canboyte/canboyte.component';
 import { TaikhoanComponent } from './pages/taikhoan/taikhoan.component';
-// Main layout (có sidebar)
+
 export const routes: Routes = [
   {
     path: '',
@@ -16,6 +16,11 @@ export const routes: Routes = [
         (m) => m.MainLayoutComponent
       ),
     children: [
+      {
+        path: '',
+        redirectTo: 'lichtiem',
+        pathMatch: 'full',
+      },
       {
         path: 'loaitiemchung',
         loadComponent: () =>
@@ -119,6 +124,5 @@ export const routes: Routes = [
     ],
   },
 
-  // fallback route
   { path: '**', redirectTo: '' },
 ];

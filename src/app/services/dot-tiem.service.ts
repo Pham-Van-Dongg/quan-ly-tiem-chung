@@ -23,7 +23,7 @@ export class DotTiemService {
   }
 
   addDotTiem(dotTiem: DotTiem): Observable<DotTiem> {
-    // Tạo bản sao để không ảnh hưởng biến gốc
+    // Tạo bản sao
     const dotTiemPayload = { ...dotTiem };
     if (dotTiemPayload.maDot == null) {
       delete (dotTiemPayload as any).maDot;

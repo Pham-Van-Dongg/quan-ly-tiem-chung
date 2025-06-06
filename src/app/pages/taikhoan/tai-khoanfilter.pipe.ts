@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'TaiKhoanFilter',
-  standalone: true, // Angular 15+ trở lên dùng standalone pipe
+  standalone: true,
 })
 export class TaiKhoanFilterPipe implements PipeTransform {
   transform(danhSach: any[], tuKhoa: string): any[] {

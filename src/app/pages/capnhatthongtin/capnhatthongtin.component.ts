@@ -38,7 +38,7 @@ export class CapnhatthongtinComponent implements OnInit {
     if (currentUser && currentUser.nguoiDung) {
       this.maNd = currentUser.nguoiDung.maNd; // Đảm bảo không null
     } else if (currentUser && currentUser.taiKhoan) {
-      this.maNd = currentUser.taiKhoan.maNd ?? 0; // Dùng toán tử ?? để cung cấp giá trị mặc định nếu null
+      this.maNd = currentUser.taiKhoan.maNd ?? 0; // cung cấp giá trị mặc định nếu null
     } else {
       console.error('Không tìm thấy maNd trong localStorage');
       this.maNd = Number(this.route.snapshot.paramMap.get('id')) || 0; // Đảm bảo không null

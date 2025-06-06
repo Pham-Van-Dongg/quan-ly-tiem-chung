@@ -40,7 +40,6 @@ export class CanBoYteService {
     );
   }
   updateCanBo(maCb: number, canBo: CanBoYte): Observable<CanBoYte> {
-    // Đảm bảo luôn có trường lichTiems
     if (!canBo.lichTiems) {
       canBo.lichTiems = [];
     }

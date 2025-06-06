@@ -56,7 +56,6 @@ export class DotTiemComponent {
         const modal = bootstrap.Modal.getInstance(modalElement);
         modal.hide();
 
-        // Hiện thông báo thành công
         alert('Thêm đợt tiêm thành công!');
       },
       error: (err) => {

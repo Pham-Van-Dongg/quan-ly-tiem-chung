@@ -23,7 +23,6 @@ export class AuthService {
 
   saveToLocalStorage(data: TaiKhoan): void {
     if (data && data.tenDangNhap) {
-      // Loại bỏ tham chiếu vòng
       const sanitizedData = this.sanitizeData(data);
 
       const currentUser = {
@@ -45,13 +44,12 @@ export class AuthService {
     }
   }
 
-  // Hàm loại bỏ tham chiếu vòng
   private sanitizeData(data: any): any {
     const seen = new WeakSet();
     const replacer = (key: string, value: any) => {
       if (typeof value === 'object' && value !== null) {
         if (seen.has(value)) {
-          return undefined; // Loại bỏ tham chiếu vòng
+          return undefined;
         }
         seen.add(value);
 

@@ -23,7 +23,6 @@ export class HosoTiemchungComponent {
   }
 
   taiHoSo() {
-    // Đây là dữ liệu giả lập. Khi dùng API, bạn gọi theo beDuocChon.id
     this.hoSoTiemChung = [
       {
         tenVaccine: 'Vắc xin 6 trong 1',

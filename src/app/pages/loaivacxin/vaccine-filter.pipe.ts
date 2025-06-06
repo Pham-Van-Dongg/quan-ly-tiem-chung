@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'VaccineFilter',
-  standalone: true, // Angular 15+ trở lên dùng standalone pipe
+  standalone: true,
 })
 export class VaccineFilterPipe implements PipeTransform {
   transform(danhSach: any[], tuKhoa: string): any[] {
